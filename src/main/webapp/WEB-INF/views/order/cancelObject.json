@@ -1,0 +1,71 @@
+{
+    "mId": "tvivarepublica",
+    "lastTransactionKey": "3CE994DA185594B05A75FF5850943579",
+    "paymentKey": "2Dv9ZPM7zXLkKEypNArWpL0jBwEyqL8lmeaxYG5R4Jo6bnOw",
+    "orderId": "test-1709775280634",
+    "orderName": "어벤져스 : 인피니티 워 넨도로이드 No.1120 닥터 스트레인지 인피니티 에디션 스탠다드 외 3개",
+    "taxExemptionAmount": 0,
+    "status": "CANCELED",
+    "requestedAt": "2024-03-07T10:34:45+09:00",
+    "approvedAt": "2024-03-07T10:34:56+09:00",
+    "useEscrow": false,
+    "cultureExpense": false,
+    "card": {
+        "company": "하나",
+        "issuerCode": "21",
+        "acquirerCode": "21",
+        "number": "51184500****140*",
+        "installmentPlanMonths": 0,
+        "isInterestFree": false,
+        "interestPayer": null,
+        "approveNo": "00000000",
+        "useCardPoint": false,
+        "cardType": "체크",
+        "ownerType": "개인",
+        "acquireStatus": "READY",
+        "receiptUrl": "https://dashboard.tosspayments.com/receipt/redirection?transactionId=tviva20240307103456YPeu2&ref=PX",
+        "amount": 582200
+    },
+    "virtualAccount": null,
+    "transfer": null,
+    "mobilePhone": null,
+    "giftCertificate": null,
+    "cashReceipt": null,
+    "cashReceipts": null,
+    "discount": null,
+    "cancels": [
+        {
+            "transactionKey": "3CE994DA185594B05A75FF5850943579",
+            "cancelReason": "",
+            "taxExemptionAmount": 0,
+            "canceledAt": "2024-03-07T22:57:12+09:00",
+            "easyPayDiscountAmount": 0,
+            "receiptKey": null,
+            "cancelAmount": 582200,
+            "taxFreeAmount": 0,
+            "taxAmount": null,
+            "refundableAmount": 0
+        }
+    ],
+    "secret": null,
+    "type": "NORMAL",
+    "easyPay": null,
+    "country": "KR",
+    "failure": null,
+    "isPartialCancelable": true,
+    "receipt": {
+        "url": "https://dashboard.tosspayments.com/receipt/redirection?transactionId=tviva20240307103456YPeu2&ref=PX"
+    },
+    "checkout": {
+        "url": "https://api.tosspayments.com/v1/payments/2Dv9ZPM7zXLkKEypNArWpL0jBwEyqL8lmeaxYG5R4Jo6bnOw/checkout"
+    },
+    "transactionKey": "3CE994DA185594B05A75FF5850943579",
+    "currency": "KRW",
+    "totalAmount": 582200,
+    "balanceAmount": 0,
+    "suppliedAmount": 0,
+    "vat": 0,
+    "taxFreeAmount": 0,
+    "method": "카드",
+    "version": "2022-07-27"
+}

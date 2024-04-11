@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="com.cafe24.goott351.mappers.adminCustomerMapper">
+ 
+ 
+ <select id="selectAllCustomerList" resultType="LoginCustomerVO">
+ 	select * from customers
+ 	<where>
+ 		<choose>
+					
+ 			<when test="searchType == 'name' and searchWord != ''">
+				 name like concat('%', #{searchWord}, '%') 
+ 			</when>
+ 			<when test="searchType == 'email' and searchWord != ''">
+				 email like concat('%', #{searchWord}, '%') 
+ 			</when>
+ 			<when test="searchType == 'nickname' and searchWord != ''">
+				 nickname like concat('%', #{searchWord}, '%') 
+ 			</when>
+ 			<when test="searchType == 'phoneNumber' and searchWord != ''">
+				 phone_number like concat('%', #{searchWord}, '%') 
+ 			</when>
+ 		</choose>
+ 		
+ 	</where>
+ 	<if test="colName == 'name' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+ 	order by name desc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ 	<if test="colName == 'name' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+ 	order by name asc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ 	<if test="colName == 'email' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+ 	order by email desc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ 	<if test="colName == 'email' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+ 	order by email asc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ 	<if test="colName == 'nickname' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+ 	order by nickname desc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ 	<if test="colName == 'nickname' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+ 	order by nickname asc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ 	<if test="colName == 'registerDate' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+ 	order by register_date desc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ 	<if test="colName == 'registerDate' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+ 	order by register_date asc limit #{startRowIndex}, #{pageProductCnt}
+ 	</if>
+ </select>
+ 
+ <!-- 검색 조건에 따른 고객 총 수 -->
+ <select id="getTotalCustomerCntBySearch" resultType="int">
+ 	select count(*) from customers
+ 	<where>
+ 		<choose>
+ 			<when test="searchType == 'name' and searchWord != ''">
+				 name like concat('%', #{searchWord}, '%')
+ 			</when>
+ 			<when test="searchType == 'email' and searchWord != ''">
+				 email like concat('%', #{searchWord}, '%')
+ 			</when>
+ 			<when test="searchType == 'nickname' and searchWord != ''">
+				 nickname like concat('%', #{searchWord}, '%')
+ 			</when>
+ 			<when test="searchType == 'phoneNumber' and searchWord != ''">
+				 phone_number like concat('%', #{searchWord}, '%')
+ 			</when>
+ 		</choose>
+ 	</where>
+ 
+ </select>
+ 
+ <!-- 회원 수 정보 불러오기 -->
+ <select id ="getCustomerCnt" resultType="CustomerCntVO" >
+ <![CDATA[
+  select count(case when gender = 'male' then 1 end) as totMale, count(case when gender = 'female' then 1 end) as totFemale,
+		(select count(*) from customers) as totCustomer, (select count(*) from withdraw_customers) as withdraw,
+        (select count(*) from customers where timestampdiff(hour, register_date, now()) < (24*30)) as regCustomer from customers
+        ]]>
+ </select>
+ 
+ <!-- 회원 정보 업데이트 -->
+ <update id="updateUserInfo">
+ 	update customers set nickname = #{nickname}, is_admin = #{isAdmin} where uuid = #{uuid}
+ </update>
+ 
+<!--회원 테이블 포인트 업데이트 -->
+ <update id="updateUserPoint">
+ 	
+				update customers set user_point = user_point + #{point} where email in
+    	<foreach item="pcs" collection="list" separator="," open="(" close=")">
+				 #{pcs}	
+ 		</foreach>
+ 
+ </update>
+ 
+ <!-- 포인트 로그 작성 -->
+ <insert id="insertUserPointLog">
+ 	insert into pointlog(why, customer_uuid, howmuch)
+ 		select '관리자부여', c.uuid, #{point}
+ 		from customers c
+ 		where c.email IN
+ 	<foreach item="pcs" collection="list" separator="," open="(" close=")">
+			 #{pcs}	
+ 		</foreach>
+ </insert>
+ 
+ <!-- 삭제 로그 작성 -->
+ <insert id="insertDrawLog">
+ 	insert into withdraw_customers(email, possible_date, withdraw_reason) values(#{email}, date_add(now(), interval 7 day), #{reason})
+ </insert>
+ 
+ <!-- 유저 삭제 -->
+ <delete id="deletCsInfo">
+ 	delete from customers where email = #{email }
+ </delete>
+ 
+ <update id="resetCustomerPwd">
+ 	update customers set password = sha1(md5(#{rndPwd})) where email = #{email}
+ </update>
+ </mapper>

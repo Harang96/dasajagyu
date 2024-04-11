@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.reviewMapper">
+
+	<select id="selectReviewableProduct" resultType="ProductReviewVO">
+		select op.product_no, op.order_no, p.product_name, p.original_name, 
+				p.thumbnail_img, o.customer_id as uuid, o.order_time from order_products op
+		inner join orders o on op.order_no = o.order_no
+		inner join products p on op.product_no = p.product_no
+		where op.product_no=#{productNo} and op.order_no=#{orderNo}
+	</select>
+
+	<select id="selectReviewableList" resultType="ProductReviewVO">
+		select op.product_no, op.order_no, p.product_name, p.original_name, 
+				p.thumbnail_img, o.order_time from order_products op
+		inner join orders o on op.order_no = o.order_no
+		inner join products p on op.product_no = p.product_no
+		where op.order_cancel = 'N' and op.review = 'N'
+    			and o.customer_id = #{uuid} 
+    			and (o.order_status = '구매확정')
+    			order by o.order_no desc
+	</select>
+<!-- 	<select id="selectReviewableList" resultType="ProductReviewVO">
+		select op.product_no, op.order_no, p.product_name, p.original_name, 
+				p.thumbnail_img, o.order_time from order_products op
+		inner join orders o on op.order_no = o.order_no
+		inner join products p on op.product_no = p.product_no
+		where op.order_cancel = 'N' and op.review = 'N'
+    			and o.customer_id = #{uuid} 
+    			and (o.order_status = '구매확정')
+    			order by o.order_no desc limit #{start}, 10
+	</select> -->
+		
+	<select id="selectCountOfReviewable" resultType="Integer">
+		select count(op.product_no) from order_products op
+		inner join orders o on op.order_no = o.order_no
+		inner join products p on op.product_no = p.product_no
+		where op.order_cancel = 'N' and op.review = 'N'
+    			and o.customer_id = #{uuid} 
+    			and (o.order_status = '구매확정')
+	</select>
+	
+	<select id="selectWroteReviewsList" resultType="ProductReviewVO">
+		select * from review r
+		inner join order_products op on r.product_no = op.product_no and r.order_no = op.order_no
+		inner join customers c on r.uuid = c.uuid
+		inner join products p on r.product_no = p.product_no
+		where r.uuid = #{uuid} order by r.review_no desc;
+	</select>
+	
+	<select id="selectReviewByNo" resultType="ProductReviewVO">
+		select * from review r
+		inner join order_products op on r.product_no = op.product_no and r.order_no = op.order_no
+		inner join customers c on r.uuid = c.uuid
+		inner join products p on r.product_no = p.product_no
+		where r.review_no = #{reviewNo}
+	</select>
+	
+	<insert id="insertProductReivew">
+		insert into review(product_no, order_no, uuid, original_name, review_content, review_star) 
+		values (#{productNo}, #{orderNo}, #{uuid}, #{originalName}, #{reviewContent}, #{reviewStar})
+		
+		<selectKey keyProperty="reviewNo" keyColumn="review_no" order="AFTER" resultType="Integer">
+        	select LAST_INSERT_ID() 
+    	</selectKey>
+	</insert>
+	
+	<update id="updateOrderProductReview">
+		update order_products set review = #{value} where product_no = #{productNo} and order_no = #{orderNo}
+	</update>
+	
+	<select id="selectOrderUUID" resultType="String">
+		select customer_id from orders where order_no = #{orderNo}
+	</select>
+	
+	<select id="calculateRateFromReviews" resultType="Float">
+		select round(avg(review_star),1) from review where product_no = #{productNo} group by product_no
+	</select>
+	<update id="updateProductRate">
+       	update products set product_rate = #{rate} where product_no = #{productNo}
+	</update>
+	
+	<update id="updateProductReivew">
+		update review set review_star=#{reviewStar}, review_content=#{reviewContent} 
+		where review_no = #{reviewNo}
+	</update>
+	
+	<delete id="deleteProductReivew">
+		delete from review where review_no = #{reviewNo}
+	</delete>
+	
+	 <insert id="insertReviewImages" parameterType="java.util.List">
+	    insert into image (base64, img_size, review_no)
+	    VALUES
+		    <foreach collection="list" item="item" separator=",">
+		        (#{item.base64}, #{item.imgSize}, #{item.reviewNo})
+		    </foreach>
+	 </insert>
+	 
+	 <select id="selectReviewImages" resultType="Base64ImgDTO">
+	 	select img_no, base64 from image where review_no=#{reviewNo}
+	 </select>
+
+	<delete id="deleteAllImagesByReviewNo">
+		delete from image where review_no = #{reviewNo}
+	</delete>
+
+	<delete id="deleteImageByImgNo">
+		delete from image where img_no = #{imgNo}
+	</delete>
+
+</mapper>

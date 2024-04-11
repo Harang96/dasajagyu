@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.orderAdminMapper">
+	<select id="selectAllOrders" resultType="OrderVO">
+		select * from orders order by order_time desc limit #{startRowIndex}, #{viewPostCntPerPage}  
+	</select>
+	
+	<select id="selectCustomer" resultType="CustomerVO">
+		select * from customers where uuid = #{uuid}
+	</select>
+	
+	<select id="selectTotalOrderCnt" resultType="int">
+		select count(*) from orders
+	</select>
+		
+	<select id="getAllListCntWithSearch" resultType="int">
+		select count(*) from orders
+		<where>
+			<choose>
+			<when test="searchType == '주문상태'">
+				order_status like #{orderStatus}
+			</when>
+			<when test="searchType == '결제상태'">
+				pay_status like #{payStatus}
+			</when>
+			<otherwise>
+				order_name like #{searchWord}
+			</otherwise>
+			</choose>
+		</where>
+	</select>
+	<select id="getAllOrderWithSearch" resultType="OrderVO">
+		select * from orders
+		<where>
+			<choose>
+			<when test="searchType == '주문상태'">
+				order_status like #{orderStatus}
+			</when>
+			<when test="searchType == '결제상태'">
+				pay_status like #{payStatus}
+			</when>
+			<otherwise>
+				order_name like #{searchWord}
+			</otherwise>
+			</choose>
+			order by order_no desc limit #{startRowIndex}, #{viewPostCntPerPage}
+		</where>
+	</select>
+	
+	<select id="selectAllOrdersWithFilter" resultType="OrderVO">
+		select * from orders where order_status = #{orderType} order by order_time desc limit #{startRowIndex}, #{viewPostCntPerPage}
+	</select>
+	
+	<select id="selectPaymentkey" resultType="String">
+		select payment_key from orders where order_no = #{orderNo}
+	</select>
+	
+	<select id="selectOrderProductList" resultType="OrderProductVO">
+		select order_no, product_no, quantity, order_price, order_cancel from order_products where order_no = #{orderNo}
+	</select>
+	
+	<select id="selectCancelOrderProduct" resultType="OrderProductVO">
+		select order_no, product_no, quantity, order_price, order_cancel, discount_cost, sales_cost 
+		from order_products where order_no = #{orderNo} and product_no = #{productNo}
+	</select>
+	
+	<select id="selectOrderProductOfNotCanceledList" resultType="OrderProductVO">
+		select op.order_no, op.product_no, op.quantity, op.order_price, op.discount_cost, op.sales_cost, op.order_cancel, op.original_name, p.thumbnail_img from order_products op inner join products p on op.product_no = p.product_no where op.order_no = #{orderNo} and op.order_cancel = "N"
+	</select>
+	
+	<select id="selectOrderRow" resultType="OrderVO">
+		select order_no, order_time, order_status, pay_status, delivery_date, payment_key, payment_date, order_name, customer_id, pay_method, pay_account_no from orders where order_no = #{order_no}
+	</select>
+	
+	<select id="selectPrdNmByPrdNo" resultType="String">
+		select product_name from products where product_no = #{orderNo}
+	</select>
+	
+	<select id="selectOrderBilling" resultType="OrderBillingVO">
+		select order_no, product_amount, product_discount, point_discount, shipping_cost, order_cost, order_point from order_billing where order_no = #{orderNo}
+	</select>
+	
+	<select id="selectCustomerInfo" resultType="LoginCustomerVO">
+		select c.uuid, c.email, c.name, c.phone_number, c.nickname, c.session_key, c.user_img, c.user_point, c.bank_name, c.refund_account from orders o inner join customers c on o.customer_id = c.uuid where o.order_no = #{orderNo}
+	</select>
+	
+	<update id="updateOrderProduct" >
+		update order_products set order_cancel = 'Y' where order_no = #{orderNo} and product_no = #{productNo}
+	</update>
+	
+<!-- 	<update id="updateOrderBilling"> -->
+<!-- 		update order_billing ob  -->
+<!-- 		inner join order_products op on ob.order_no = op.order_no  -->
+<!-- 		inner join orders od on ob.order_no = od.order_no -->
+<!-- 		set ob.product_amount = ob.product_amount - (select sales_cost * quantity from order_products where order_no = #{order_no} and product_no = #{product_no}), -->
+<!-- 		ob.product_discount = ob.product_discount - (select discount_cost from order_products where order_no = #{order_no} and product_no = #{product_no}), -->
+<!-- 		ob.order_cost = ob.product_amount - ob.product_discount - ob.point_discount + ob.shipping_cost, -->
+<!-- 		ob.shipping_cost = #{shipping_cost}, -->
+<!-- 		ob.order_point = (ob.order_cost - ob.shipping_cost) * 0.01,  -->
+<!-- 		ob.point_discount = IF( ob.product_amount = 0 , 0, ob.point_discount) -->
+<!-- 		where ob.order_no = #{order_no} -->
+		
+<!-- 	</update> -->
+
+	<update id="updateOrderBilling">
+		update order_billing 
+		set product_amount = product_amount - #{cancelAmount},
+			product_discount = product_discount - #{cancelProductDiscount},
+			order_cost = order_cost - #{refundCost}, 
+			point_discount = point_discount - #{refundPoint},
+			shipping_cost = shipping_cost - #{refundShipping},
+			order_point = order_point - #{refundEarningPoint}
+		where order_no = #{orderNo}
+	</update>
+	
+	<update id="updateCustomerEarningPoint">
+		update customers 
+		set user_point = user_point - #{refundEarningPoint}
+		where uuid = #{customerId}
+	</update>
+	
+	<select id="selectProductQuantityByProductNo" resultType="int">
+		select current_qty from products where product_no = #{productNo}
+	</select>
+	
+	<update id="updateQuantity">
+		update products set current_qty = current_qty-#{quantity} where product_no = #{productNo}
+	</update>
+	
+	<update id="updateOrderStatus">
+		update orders set order_status = #{status}, pay_status = #{status} where order_no = #{orderNo}
+	</update>
+	
+	<update id="updateProductQuantity">
+		update products set current_qty = current_qty + #{quantity} where product_no = #{productNo}
+	</update>
+	
+  	<insert id="insertCsByAdmin">
+  		insert into order_cs(reason, is_admin, product_quantity, product_no, cs_type, order_no) values(#{reason}, "Y", #{quantity}, #{productNo}, #{csType}, #{orderNo})
+  	</insert>
+  	
+  	<select id="selectOrderCancelRowCount" resultType="int">
+  		select count(order_no) from order_products where order_no = #{orderNo} and order_cancel = "Y"
+  	</select>
+  	
+  	<update id="updateCustomerPoint">
+	  	update customers
+		set user_point = user_point + #{pointDiscount}
+		where uuid = (select customer_id from orders where order_no = #{orderNo})
+  	</update>
+  	
+  	<select id="selectOrderstatus" resultType="String">
+  		select order_status from orders where order_no = #{orderNo}
+  	</select>
+  	
+  	<select id="selectProductInfo" resultType="ProductVO">
+  		select * from products where product_no = #{productNo}
+  	</select>
+  	
+  	<insert id="insertPointLog">
+  		insert into pointlog(why, customer_uuid, howmuch) values(#{why}, #{customerUuid}, #{howmuch})
+  	</insert>
+  	
+	<select id="selectOrderProduct" resultType="OrderProductVO">
+	    select op.order_no, 
+	    	   op.product_no, 
+	           op.quantity, 
+	           op.order_price, 
+	           op.discount_cost, 
+	           op.sales_cost, 
+	           op.original_name, 
+	           p.product_name,
+	           p.thumbnail_img 
+	    from order_products op inner join products p 
+	    on op.product_no = p.product_no 
+	    <where>
+	    	<if test="productNo == 0">
+	            op.order_no = #{orderNo}
+	        </if>
+	        <if test="productNo != 0	">
+	            op.order_no = #{orderNo} and p.product_no = #{productNo}
+	        </if>
+	        
+	    </where> 
+	</select>
+	
+	<insert id="insertCs">
+		insert into order_cs(reason, is_admin, product_quantity, product_no, cs_type, order_no) values (#{cancelReason}, #{adminYn}, #{quantity}, #{productNo}, #{csType}, #{orderNo})
+	</insert>
+	
+	<insert id="insertCsForObjOfOrderCsDTO">
+		insert into order_cs(reason, is_admin, product_quantity, product_no, cs_type, order_no) values (#{reason}, #{adminYn}, #{productQuantity}, #{productNo}, #{csType}, #{orderNo})
+	</insert>
+  	
+  	<select id="selectOrderCs" resultType="OrderCSVO">
+  		select cs_no, cs_date, reason, is_admin, product_quantity, product_no, cs_type, order_no, reason_type, cs_processed
+  		from order_cs 
+  		where order_no = #{orderNo} and (cs_processed is null or cs_processed != "Y") ;
+  	</select>
+  	
+  	<update id="updateDeliveryStatus">
+  		update orders set order_status = #{status} , delivery_date = now() where order_no = #{orderNo}
+  	</update>
+  	
+  	<select id="selectDeliveryStatus" resultType="String">
+  		select order_status from orders where order_no = #{orderNo}
+  	</select>
+  	
+  	<select id="selectProduct" resultType="ProductVO">
+  		select * from products where product_no = #{productNo}
+  	</select>
+  	
+  	<update id="updateOrderCsProcessed">
+  		update order_cs set cs_processed = #{csProcessed} 
+  		where cs_no = #{csNo}
+  	</update>
+  	
+  	<select id="selectOrderShippingInfo" resultType="OrderShippingDTO">
+  		select * from shipping where order_no = #{orderNo}
+  	</select>
+  	
+  	<select id="selectBase64" resultType="String">
+  		select base64 from image where cs_order_no = #{orderNo}
+  	</select>
+  	
+  	<update id="updateCustomerOfOrderBilling">
+  		update customers
+		set user_point = user_point + (#{pointDiscount} - #{orderPoint})
+		where uuid = (select customer_id from orders where order_no = #{orderNo})
+  	</update>
+  	
+  	<update id="updateCanceledOrderBilling">
+  		update order_billing 
+		set 
+			order_cost = 0, 
+			point_discount = 0,
+			shipping_cost = 0,
+			order_point = 0
+		where order_no = #{orderNo}
+  	</update>
+  	
+</mapper>

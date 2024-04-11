@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.loginMapper">
+	<select id="selectLoginCustomer" resultType="LoginCustomerVO">
+		select uuid, email, password, name, birthday, phone_number, gender, nickname, session_key, user_img, user_point, register_date, is_admin, msg_agree, bank_name, refund_account, social_login, basic_addr from customers where email = #{email} and password = sha1(md5(#{password})) 
+	</select>
+	
+	<select id="selectUUIDwithEmail" resultType="string">
+		select uuid from customers where email = #{email}
+	</select>
+	
+	<update id="updateAutoLogin">
+		update customers set session_key = #{sessionKey} where uuid = #{uuid}
+	</update>
+	
+	<select id="selectLoginCustomerBySes" resultType="LoginCustomerVO">
+		select uuid, email, password, name, birthday, phone_number, gender, nickname, session_key, user_img, user_point, register_date, is_admin, msg_agree, bank_name, refund_account, social_login, basic_addr from customers where session_key = #{sessionKey} 
+	</select>
+	
+	<insert id="insertTrylog">
+		insert into login_trylog (customer_uuid) values (#{uuid})
+	</insert>
+	
+	<delete id="deleteTrylog">
+		delete from login_trylog where customer_uuid = #{uuid}
+	</delete>
+	
+	<select id="selectCountOfTry" resultType="int">
+		select count(customer_uuid) from login_trylog where customer_uuid = #{uuid}
+	</select>
+	
+	<select id="selectCountOfPhone" resultType="int">
+		select count(uuid) from customers where phone_number = #{phoneNumber}
+	</select>
+	
+	<select id="selectKakaoLogin" resultType="LoginCustomerVO">
+		select uuid, email, password, name, birthday, phone_number, gender, nickname, session_key, user_img, user_point, register_date, is_admin, msg_agree, bank_name, refund_account, social_login, basic_addr from customers where email = #{email}
+	</select>
+	
+	<insert id="insertKakaoInfo">
+		insert into customers (uuid, email, password, name, birthday, phone_number, gender, nickname, msg_agree, social_login, basic_addr) values(uuid(), #{email}, sha1(md5("kakao1234")), '카카오', '1990-11-11', #{phoneNumber}, #{gender}, #{nickname}, 'Y', 'K', 'N')
+	</insert>
+</mapper>

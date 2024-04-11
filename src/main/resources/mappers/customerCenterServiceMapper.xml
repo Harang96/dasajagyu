@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="com.cafe24.goott351.mappers.customerCenterServiceMapper">
+ 	<select id="selectQnaBoardList" resultType="ServiceBoardDTO">
+ 		select * from service_board sb inner join customers cs on sb.uuid = cs.uuid where sv_type = lower(#{svType})
+ 	</select>
+ 	
+ 	<insert id="insertPost">
+	 	insert into service_board(sv_board_title, sv_board_content, sv_isHidden, sv_type, product_no, uuid, order_no) 
+	 	values(#{svBoardTitle}, #{svBoardContent}, #{svIsHidden}, #{svType}, #{productNo}, #{uuid}, #{orderNo})
+	 	
+		<selectKey keyProperty="svBoardNo" keyColumn="sv_board_no" order="AFTER" resultType="Integer">
+        select LAST_INSERT_ID() 
+    </selectKey>
+ 	</insert>
+ 	
+  	<select id="selectPost" resultType="ServiceBoardVO">
+  		select * from service_board where sv_board_no = #{svBoardNo}
+  	</select>
+  	
+  	<update id="updatePost">
+  		update service_board 
+  		set sv_board_title = #{svBoardTitle}, 
+  		sv_board_content = #{svBoardContent}, 
+  		product_no = #{productNo}, 
+  		order_no = #{orderNo} 
+  		where sv_board_no = #{svBoardNo} 
+  	</update>
+  	
+  	<update id="updatePostHidden">
+  		update service_board 
+  		set sv_isHidden = #{svIsHidden}
+  		where sv_board_no = #{svBoardNo} 
+  	</update>
+  	
+  	<update id="updatePostSoftDelete">
+  		update service_board 
+  		set sv_isHidden = "Y", sv_isDelete = "Y"
+  		where sv_board_no = #{svBoardNo} 
+  	</update>
+  	
+  	<select id="selectUserIsAdmin" resultType="CustomerVO">
+  		select * from customers where uuid = #{uuid}
+  	</select>
+  	
+  	<update id="updateCommentBoardNo">
+  		update service_board set comment_board_no = #{svBoardNo} where sv_board_no = #{commentBoardNo} 
+  	</update>
+ </mapper>

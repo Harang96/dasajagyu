@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+		<!-- DB log4jdbc설정 -->
+	<!-- 부하가 좀 큼. 에러가날 경우에만 사용 -->
+<!-- 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> -->
+<!-- 		<property name="url" value="jdbc:log4jdbc:mysql://localhost:3306/shk?useSSL=false&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8"></property> -->
+<!-- 		<property name="username" value="root"></property> -->
+<!-- 		<property name="password" value="1234"></property> -->
+<!-- 		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property> -->
+<!-- 	</bean> -->
+   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="url" value="jdbc:mariadb://localhost:3306/goott351?useSSL=false&amp;serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8"></property>
+      <property name="driverClassName" value="org.mariadb.jdbc.Driver"></property>
+      <property name="username" value="goott351"></property>
+      <property name="password" value="rnxm351@"></property>
+   </bean>
+			
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- 	transaction을 annotation방식으로 처리함 -->
+<!-- 	<tx:annotation-driven/> -->
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 마이바티스 환경설정파일이 있는 곳 -->
+		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
+		<!-- mapper파일이 위치해있는곳 -->
+		<property name="mapperLocations" value="classpath:/mappers/**/*Mapper.xml"></property>
+	</bean>
+
+	<!-- sqlSessionFactory 객체 설정 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	
+	<!-- AOP설정을 위한 Proxy객체 생성 -->
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	
+	<!-- 	작업 스케줄러 annotation 방식으로 처리함. -->
+	<task:annotation-driven/>
+	
+	<!-- 아래의 패키지를 조사해서(Scan) 패키지 안의 객체를 관리 -->
+	<context:component-scan base-package="com.cafe24.goott351.admin.board" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.admin.customer" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.admin.order" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.admin.product" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.user.customer" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.user.mypage" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.user.order" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.user.product" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.board" use-default-filters="true">
+	  <context:include-filter type="aspectj" expression="persistence" />
+	</context:component-scan>
+	<context:component-scan base-package="com.cafe24.goott351.aop" />
+	<context:component-scan base-package="com.cafe24.goott351.domain" />
+	<context:component-scan base-package="com.cafe24.goott351.exception" />
+	<context:component-scan base-package="com.cafe24.goott351.interceptor" />
+	<context:component-scan base-package="com.cafe24.goott351.util" />
+   	<context:component-scan base-package="com.cafe24.goott351.board" />
+</beans>

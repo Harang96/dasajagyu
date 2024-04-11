@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.goott351.mappers.boastBoardMapper">
+
+
+	<select id="getAllBoard" resultType="com.cafe24.goott351.domain.BoardVO">
+		select * from board where category_no = 5 order  by board_no desc limit #{startRowIndex}, #{viewPostCntPerPage}
+
+	</select>
+
+		
+	<insert id="insertNewBoard">
+		insert into board(category_no, board_title, board_content, uuid)
+		values(5 , #{boardTitle}, #{boardContent}, #{uuid})
+	</insert>
+	
+	
+	<select id="getNo" resultType="int">
+		select max(board_no) as maxNo from board
+	</select>
+	
+	<insert id="insertUploadedFile">
+		insert into image(img_ext, img_origin_name, img_new_name, img_size, board_no)
+		values(#{imgExt}, #{imgOriginName},#{imgNewName},#{imgSize},#{boardNo})
+	</insert>
+	
+	<select id="getAllBoardWithSearch" resultType="com.cafe24.goott351.domain.BoardVO">
+		select * from board where category_no = 5
+	<choose>
+		<when test="searchType == 'uuid'">
+			and uuid like #{searchWord}
+		</when>
+		<when test="searchType == 'title'">
+			and	board_title like #{searchWord}
+		</when>
+		<otherwise>
+			and board_content like #{searchWord}
+		</otherwise>
+	</choose>
+			order by board_no desc limit #{startRowIndex}, #{viewPostCntPerPage}
+			
+		</select>
+		
+		<select id="getTotalBoardCntWithSearch" resultType="int">
+		select count(*) from board where category_no = 5
+		<choose>
+		<when test="searchType == 'title'">
+			and board_title like #{searchWord}
+		</when>
+		<when test="searchType == 'uuid'">
+			and uuid like #{searchWord}
+		</when>
+		<otherwise>
+			and board_content like #{searchWord}
+		</otherwise>
+		</choose>	
+	</select>
+		
+	<select id="getBoardCnt" resultType="int">
+	
+	select count(*) as totalPostCnt from board
+	
+	</select>
+	
+	<select id="getReadCountProcess" resultType="com.cafe24.goott351.domain.ReadCountProcess">
+		select * from read_log where board_no = #{boardNo} and id_Addr = #{idAddr}
+	</select>
+	
+	<select id="getHourDiffReadTime" resultType="int">
+		select timestampdiff(hour,
+		(select readTime from readcountprocess where ip_addr = #{ipAddr} and board_no = #{boardNo}), now()) as hourDiff
+	</select>
+	
+		<update id="updateReadCountProcess">
+			update readcountprocess set read_time = now()
+			where ip_addr = #{idAddr} and boardNo = #{boardNo}
+	</update>
+	
+	<update id="updateReadCount">
+	
+	update board set board_read = board_read + 1 where board_no = #{boardNo}
+	
+	</update>
+	
+	
+	<insert id = "insertReadCountProcess">
+	
+	insert into readcountprocess(ip_addr, board_no) values(#{idAddr}, #{boardNo})
+	
+	</insert>
+	
+	<select id="getBoardByNo" resultType="com.cafe24.goott351.domain.BoardVO">
+		
+	select * from board where board_no = #{boardNo}
+	</select>
+	
+	<select id= "getUploadedFiles" resultType="com.cafe24.goott351.domain.BoardImgVO">
+	
+	select * from image where board_no = #{boardNo}
+	
+	</select>
+	
+	<insert id="like">
+		 insert into board_likelog(uuid, board_no) values(#{uuid}, #{boardNo})	
+	</insert>
+	
+	<delete id="dislike">
+		delete from board_likelog where uuid = #{uuid} and board_no = #{boardNo}
+	</delete>
+	
+	
+	<update id="incDecLikeCount">
+		update board set board_like = board_like + #{n} where board_no = #{boardNo}
+	</update>
+	
+	
+	<update id="updateUserPoint">
+ 		<selectKey keyProperty="howmuch" resultType="int" order="BEFORE">
+ 			select howmuch from pointpolicy where why = #{why} 
+ 		</selectKey>
+ 			update customers set user_point =  user_point + #{howmuch}  where uuid = #{uuid}
+ 	</update>
+	
+<!-- 	<select id="getPeopleWhoLikesBoard" resultType="String"> -->
+<!-- 		select uuid from board_likelog where board_no =#{boardNo} -->
+<!-- 	</select> -->
+	
+</mapper>

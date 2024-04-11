@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.shareBoardMapper">
+	<select id="selectListOfShareBoard" resultType="ShareBoardVO">
+		select b.board_no, b.category_no, b.board_title, b.board_content, b.uuid, b.write_date, b.board_like, b.board_read, c.nickname as writer from board b, customers c 
+		<where> 
+			<choose>
+				<when test="searchType == 'content'">
+					b.board_content like #{searchWord}
+				</when>
+				<when test="searchType == 'writer'">
+					c.nickname like #{searchWord}
+				</when>
+				<otherwise>
+					b.board_title like #{searchWord}
+				</otherwise>
+			</choose>
+			and b.uuid = c.uuid and b.category_no = 2 
+		</where>
+		order by board_no desc
+	</select>
+	
+	<select id="selectPopPost" resultType="ShareBoardVO">
+		select b.board_no, b.category_no, b.board_title, b.board_content, b.uuid, b.write_date, b.board_like, b.board_read, c.nickname as writer from board b, customers c where b.uuid = c.uuid and category_no = 2 order by b.board_read desc, b.board_no desc limit 5
+	</select>
+	
+	<select id="selectTotalPostCnt" resultType="int">
+		select count(board_no) from board
+		<where> 
+			<choose>
+				<when test="searchType == 'content'">
+					board_content like #{searchWord}
+				</when>
+				<otherwise>
+					board_title like #{searchWord}
+				</otherwise>
+			</choose>
+		</where>
+		and category_no = 2
+	</select>
+	
+	<select id="selectTotalPostCntWriter" resultType="int">
+		select count(b.board_no) from board b, customers c where b.uuid = c.uuid and c.nickname like #{searchWord} and b.category_no = 2
+	</select>
+	
+	<insert id="insertPost" keyProperty="boardNo">
+		insert into board (category_no, board_title, board_content, uuid) values (2, #{title}, #{content}, #{writer})
+	</insert>
+
+	<insert id="insertWriteLog">
+		insert into board_writelog (uuid, board_no) values (#{writer}, #{boardNo})
+	</insert>
+	
+	<select id="selectLastBoardNo" resultType="int">
+		select max(board_no) from board where category_no = 2
+	</select>
+	
+	<select id="checkWrittenDate" resultType="WrittenDateVO">
+		select write_date from board_writelog where uuid = #{writer} order by write_no desc limit 1
+	</select>
+	
+	<update id="updatePoint">
+		update customers set user_point = (user_point + 50) where uuid = #{writer}
+	</update>
+	
+	<insert id="insertPointLog">
+		insert into pointlog (why, customer_uuid, howmuch) values ('게시물작성', #{writer}, 50)
+	</insert>
+	
+	<select id="selectPostByNo" resultType="ShareBoardVO">
+		select b.board_no, b.category_no, b.board_title, b.board_content, b.uuid, b.write_date, b.board_like, b.board_read, c.nickname as writer from board b, customers c where b.board_no = #{boardNo} and c.uuid = b.uuid and category_no = 2
+	</select>
+	
+	<select id="selectPostImgByNo" resultType="ShareBoardImgVO">
+		select img_no, img_ext, img_size, img_path, img_new_name, img_origin_name, review_no, board_no from image where board_no = #{boardNo}
+	</select>
+	
+	<select id="selectReadLogCus" resultType="WrittenDateVO">
+		select read_date as write_date from read_log where id_addr = #{uuid} and board_no = #{boardNo} order by read_no desc limit 1
+	</select>
+	
+	<insert id="insertReadLogCus">
+		insert into read_log (id_addr, board_no) values (#{uuid}, #{boardNo})
+	</insert>
+	
+	<update id="updateReadCount">
+		update board set board_read = (board_read + 1) where board_no = #{boardNo}
+	</update>
+	
+	<delete id="deleteSharePost">
+		delete from board where board_no = #{boardNo}
+	</delete>
+	
+	<update id="updatePost">
+		update board set board_title = #{title}, board_content = #{content} where board_no = #{boardNo}
+	</update>
+	
+	<select id="checkLike" resultType="string">
+		select uuid from board_likelog where uuid = #{uuid} and board_no = #{boardNo}
+	</select>
+	
+	<update id="likePost">
+		update board set board_like = (board_like + 1) where board_no = #{boardNo}
+	</update>
+	
+	<insert id="insertLikelog">
+		insert into board_likelog (uuid, board_no) values (#{uuid}, #{boardNo})
+	</insert>
+	
+	<update id="dislikePost">
+		update board set board_like = (board_like - 1) where board_no = #{boardNo}
+	</update>
+	
+	<delete id="deleteLikelog">
+		delete from board_likelog where uuid = #{uuid} and board_no = #{boardNo}
+	</delete>
+	
+	<select id="selectCountOfLike" resultType="int">
+		select board_like from board where board_no = #{boardNo}
+	</select>
+	
+	<select id="selectReplyByNo" resultType="ShareBoardReplyVO">
+		select r.reply_no, r.reply_content, r.reply_date, r.board_no, r.uuid, c.nickname as writer, c.user_img as userImg from reply r, customers c where board_no = #{boardNo} and r.uuid = c.uuid order by r.reply_no desc
+	</select>
+	
+	<select id="selectReplyCount" resultType="int">
+		select count(reply_no) from reply where board_no = #{boardNo}
+	</select>
+	
+	<insert id="insertReply">
+		insert into reply (reply_content, board_no, uuid) values (#{content}, #{boardNo}, #{uuid})
+	</insert>
+	
+	<delete id="deleteReply">
+		delete from reply where reply_no = #{replyNo}
+	</delete>
+	
+	<update id="updateReply">
+		update reply set reply_content = #{content} where reply_no = #{replyNo}
+	</update>
+</mapper>

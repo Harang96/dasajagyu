@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.goott351.mappers.cartMapper">
+	<!-- 비회원 카트 테이블 불러오기 -->
+	<select id="selectCartList" resultType="CartVO">
+		 select c.cart_no, c.uuid, c.product_no, c.quantity, c.session_id,
+		pc.class_type, p.class_month, p.product_name, p.class_no,
+		p.sales_cost, p.discount_rate, p.sales_cost * (1-(p.discount_rate / 100)) as discount_cost,
+		p.current_qty, p.thumbnail_img, p.is_sales
+		from products p
+		inner join cart c on c.product_no = p.product_no
+		inner join product_class pc on p.class_no = pc.class_no
+		<choose>
+			<when test="customerType == 'nonMember'">
+				where c.session_id = #{cartId} order by cart_no desc
+			</when>
+			<when test="customerType == 'member'">
+				where c.uuid = #{cartId} order by cart_no desc
+			</when>
+		</choose> 
+		
+
+	</select>
+
+	<!-- 카트에 중복 상품있는지 없는지 -->
+	<select id="selectProductOnCart" resultType="int">
+		select count(product_no) from cart where product_no = #{productNo} and
+		<choose>
+			<when test="customerType == 'nonMember'">
+				session_id = #{cartId}
+			</when>
+			<when test="customerType == 'member'">
+				uuid = #{cartId}
+			</when>
+		</choose>
+	</select>
+
+	<!-- 카트 상품 갯수 업데이트 -->
+	<update id="updateProductOnCart">
+		update cart set quantity = quantity + #{qty} where product_no =
+		#{productNo} and
+		<choose>
+			<when test="customerType == 'nonMember'">
+				session_id = #{cartId}
+			</when>
+			<when test="customerType == 'member'">
+				uuid = #{cartId}
+			</when>
+		</choose>
+	</update>
+
+	<!-- 카트 상품 추가 -->
+	<insert id="insertProductOnCart">
+		insert into cart(uuid, product_no, quantity, session_id)
+		<choose>
+			<when test="customerType == 'nonMember'">
+				values(null, #{productNo}, #{qty}, #{cartId})
+			</when>
+			<when test="customerType == 'member'">
+				values(#{cartId}, #{productNo}, #{qty}, null)
+			</when>
+		</choose>
+	</insert>
+
+	<!-- 카트 상품 갯수 불러오기 -->
+	<select id="selectCartListCnt" resultType="int">
+		select count(product_no) from cart where
+		<choose>
+			<when test="customerType == 'nonMember'">
+				session_id = #{cartId}
+			</when>
+			<when test="customerType == 'member'">
+				uuid = #{cartId}
+			</when>
+		</choose>
+
+	</select>
+	
+	<!-- 옛날 상품 불러오기 -->
+	<select id="selectTotCartList" resultType="CartVo">
+		select uuid, product_no, sum(quantity) as quantity, session_id from cart where uuid = #{uuid} or session_id = #{oldId} group by product_no
+	</select>
+	
+	<!-- 장바구니 이전 기록 삭제 -->
+	<delete id="deleteOldCart">
+		delete from cart where uuid = #{uuid} or session_id = #{oldId}
+	</delete>
+	
+	<!-- 장바구니 카트에 추가 -->
+	<insert id="insertNewCartList" parameterType="java.util.List">
+		insert into cart(uuid, product_no, quantity) values
+		<foreach collection="list" item="item" separator=" , ">
+			("${item.uuid}", "${item.productno}", "${item.quantity}")
+		</foreach>
+	</insert>
+	
+	<!-- 장바구니 상품 삭제 -->
+	<delete id="deleteCartList">
+		delete from cart where product_no = #{productNo} and 
+		<choose>
+			<when test="customerType == 'nonMember'">
+				session_id = #{cartId}
+			</when>
+			<when test="customerType == 'member'">
+				uuid = #{cartId}
+			</when>
+		</choose>
+	</delete>
+	
+	<!-- 상품 하나만 수량 가져오기 -->
+	<select id="selectOneCart" resultType = "int">
+		select quantity from cart where
+		<choose>
+			<when test="customerType == 'nonMember'">
+				session_id = #{cartId} and product_no = #{productNo}
+			</when>
+			<when test="customerType == 'member'">
+				uuid = #{cartId} and product_no = #{productNo}
+			</when>
+		</choose>
+	
+	</select>
+	
+</mapper>

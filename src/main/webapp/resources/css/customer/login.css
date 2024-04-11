@@ -1,0 +1,73 @@
+@charset "UTF-8";
+
+#loginFailMsg {
+	color: #ef837b;;
+	font-size: 12px;
+	float: left;
+}
+
+#checkboxes {
+	height: 56px;
+    font-size: 12px;
+    display: contents; /* 김연지 추가 */
+}
+
+/* 김연지 추가 */
+.checkboxesWrap {
+	padding: 0 !important;
+    border-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+.login-img {
+	background-image: url('/resources/assets/images/backgrounds/login-background.png') !important;
+	background-attachment: fixed;
+}
+
+/* 김연지 추가 */
+#loginBtn {
+	margin: 20px 0px;
+    width: 100%;
+    padding: 15px 10px;
+    line-height: 20px;
+    font-size: 17px;
+    min-height: 50px;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #ef837b;
+}
+
+#loginBtn:hover {
+	background-color: rgba(239, 131, 123, 0.8);
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    border-color: #ef837b !important;
+    background-color: #ef837b !important;
+}
+
+.form-box {
+	box-shadow: none !important;
+}
+.btn.btn-login {
+	border: none !important;
+	border-radius: 4px !important;
+}
+
+
+/* 김연지 추가 */
+.form-tab .form-footer .custom-control {
+    margin: 0 15px 0 0 !important;
+}
+
+
+#lEmail::placeholder {
+	color: #ef837b;
+}
+
+#lPassword::placeholder {
+	color: #ef837b;
+}
+
+.loginCheck:hover {
+	cursor: pointer;
+}

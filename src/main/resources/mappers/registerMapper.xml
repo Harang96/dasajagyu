@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.registerMapper">
+ 	<insert id = "insertRegister">
+	
+	insert into customers(email, password, uuid, name, phone_number, nickname, birthday, bank_name, refund_account, gender)
+	values(#{emailRegister}, sha1(md5(#{passwordRegister})), UUID(), #{name}, #{phoneNumber}, #{nickname}, #{birthday}, #{bankName}, #{refundAccount}, #{gender})
+	
+	</insert>
+	<select id="idChk" resultType="int">
+  SELECT COUNT(*) FROM customers WHERE email = #{emailRegister}
+</select>
+	
+<select id="nicknameChk" resultType="int">
+  SELECT COUNT(*) FROM customers
+  WHERE nickname = #{nickname}
+</select>
+	
+	<select id="phoneNumberChk" resultType="int">
+  SELECT COUNT(*) FROM customers
+  WHERE phone_number = #{phoneNumber}
+</select>
+	
+<select id="refundAccountChk" resultType="int">
+  SELECT COUNT(*) FROM customers
+  WHERE refund_account = #{refundAccount}
+</select>	
+<select id="selectUuid" resultType="String">
+
+select uuid from customers where email = #{emailRegister}
+
+</select>
+
+</mapper>

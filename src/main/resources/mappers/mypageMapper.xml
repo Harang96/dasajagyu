@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.cafe24.goott351.mappers.mypageMapper">
+ 
+ <select id="selectWishProducts" resultType="ProductVO">
+ 	select p.* 
+	from products p inner join product_likelog pl
+	on p.product_no = pl.product_no
+	where pl.customer_id = #{uuid};
+ </select>
+ 
+ <insert id="insertAddr">
+	insert into delivery(delivery_postcode, delivery_addr, delivery_detail, uuid, delivery_name, phone_number, basic_addr) 
+	values(#{deliveryPostcode}, #{deliveryAddr}, #{deliveryDetail}, #{uuid}, #{deliveryName}, #{phoneNumber}, #{basicAddr});	  	
+</insert>
+
+<select id="selectDeliveryAddr" resultType="DeliveryDTO">
+ 	select * from delivery where uuid = #{uuid}
+</select>
+ 
+ <select id="selectDeliveryNoAddr" resultType="DeliveryDTO">
+ 	select * from delivery where delivery_no = #{deliveryNo}
+</select>
+ 
+ <update id="updateModifyDeliveryAddr">
+		update delivery set delivery_postcode = #{deliveryPostcode}, delivery_addr = #{deliveryAddr}, delivery_detail = #{deliveryDetail}, delivery_name = #{deliveryName}, phone_number = #{phoneNumber},  basic_addr = #{basicAddr}      
+		where delivery_no = #{deliveryNo}
+</update>
+ 
+ <delete id= "deleteModifyDeliveryAddr">
+		delete from delivery where delivery_no = #{deliveryNo}
+ 
+ </delete>
+ <select id="selectOreders" resultType = "OrderVO">
+ 	select * from orders where customer_id = #{uuid} order by order_time desc
+ </select>
+ 
+ <select id="selectOrderProduct" resultType="OrderProductVO">
+ 	select o.order_no, o.product_no, p.product_name, o.quantity, o.order_price, o.order_cancel, o.original_name, o.sales_cost, o.discount_cost, o.review, p.thumbnail_img
+	from order_products o inner join products p
+	on o.product_no = p.product_no
+	where o.order_no = #{orderNo}
+ </select>
+ 
+ <select id="selectOrderBilling" resultType="OrderBillingVO">
+ 	select * from order_billing where order_no = #{orderNo}
+ </select>
+ 
+ <select id="selectOrderShipping" resultType="OrderShippingDTO">
+	select * from shipping where order_no = #{orderNo} 
+ </select>
+ 
+  <update id="updateDefaultModifyAddrN">
+      update delivery set basic_addr = "N"      
+      where uuid = #{uuid}
+ </update>
+
+ 
+ <select id="selectPointLog" resultType="com.cafe24.goott351.domain.RegisterPointLog">
+ 	select p.* from pointlog p where customer_uuid = #{uuid} order by p.when desc
+ </select>
+ 
+ <update id="updateUserImg">
+ 	update customers set user_img = #{userImg} where uuid = #{uuid}
+ </update>
+ 
+ <update id="updateOrderStatus">
+ 	update orders set order_status = '구매확정' where order_no = #{orderNo}
+ </update>
+
+ <select id="selectListAll" resultType="AdminBoardDTO">
+		select b.*, c.nickname
+		from board b
+		inner join customers c on b.uuid = c.uuid
+		where b.uuid = #{uuid}
+		order by board_no desc
+ </select>
+  
+  <select id="selectReply" resultType="com.cafe24.goott351.domain.MyPageReplyVO">
+  		select r.* , b.category_no, b.board_title
+		from reply r
+		inner join board b on r.board_no = b.board_no
+		where r.uuid = #{uuid}
+		order by reply_no desc
+  </select>
+   
+ <update id="pwdUpdate">
+      update customers set password = sha1(md5(#{password}))      
+      where uuid = #{uuid}
+ </update>
+    
+  <update id="mobileUpdate">
+      update customers set phone_number = #{phoneNumber}     
+      where uuid = #{uuid}
+ </update>
+ 
+  <update id="nicknameUpdate">
+      update customers set nickname = #{nickname}     
+      where uuid = #{uuid}
+ </update>
+ 
+ <update id="bankUpdate">
+      update customers set bank_name = #{bankName}, refund_account = #{refundAccount}     
+      where uuid = #{uuid}
+ </update>
+ 
+ <update id="agreeUpdate">
+      update customers set msg_agree = #{msgAgree}     
+      where uuid = #{uuid}
+ </update>
+   
+ <select id="selectCsType" resultType="String">
+ 		select cs_type from order_cs where order_no = #{orderNo} limit 0, 1;
+ </select>  
+ 
+ <select id="selectOrderCsList" resultType="OrderCSVO">
+ 		select oc.*
+		from order_cs oc inner join orders c
+		on oc.order_no = c.order_no
+		where c.customer_id= #{uuid} order by cs_date desc;
+ </select>
+ 
+ <select id="selectCsProductInfo" resultType="OrderProductVO">
+ 		select o.order_no, o.product_no, p.product_name, o.quantity, o.order_price, o.order_cancel, o.original_name, o.sales_cost, o.discount_cost, o.review, p.thumbnail_img
+		from order_products o inner join products p
+		on o.product_no = p.product_no
+		where o.product_no = #{productNo} and o.order_no = #{orderNo}
+ </select>
+ 
+ <select id="selectSvList" resultType="ServiceBoardVO">
+ 		select * from service_board where sv_type = 'qna' and sv_isDelete = 'N' and  uuid = #{uuid} order by sv_board_regiDate desc;
+ </select>
+ 
+ <select id="selectCsDetail" resultType="OrderCSVO">
+ 		select oc.*, p.product_name, p.sales_cost
+		from order_cs oc inner join products p
+		on oc.product_no = p.product_no
+		where oc.cs_no = #{csNo}
+ </select>
+ 
+ <select id="selectCsDetailImg" resultType="String">
+		select base64 
+		from image i inner join order_cs oc
+		on i.cs_order_no = oc.order_no
+		where oc.cs_no = #{csNo} limit 0, 1
+ </select>
+ 
+ <select id="selectLoginCustomerInfo" resultType="LoginCustomerVO">
+ 		select * from customers where uuid = #{uuid}
+ </select>
+ 
+ <select id="selectPdQnAList" resultType="com.cafe24.goott351.domain.ProductQnAVO">
+ 		select sb.*, p.product_name, p.thumbnail_img
+		from products p inner join service_board sb
+		on p.product_no = sb.product_no
+		where sb.product_no is not null and sb.sv_isDelete = 'N' and sb.uuid = #{uuid}
+ </select>
+ 
+ <update id="updatePdQnA">
+ 		update service_board set sv_isDelete = 'Y' where sv_board_no = #{svBNo}
+ </update>
+ 
+ <select id="duplicatePwd" resultType="int">
+  SELECT COUNT(*) FROM customers
+  WHERE uuid =#{uuid} and password = sha1(md5(#{password}))
+</select>
+ 
+ </mapper>

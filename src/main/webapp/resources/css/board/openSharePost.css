@@ -1,0 +1,260 @@
+/**
+ * 
+ */
+
+#infoTable {
+	width:100%;
+	margin-top: 20px;	
+}
+
+#postTitleInputTd {
+	width: 60%;
+	border: 1px solid #ef837b;
+	border-left: 0px;
+}
+
+#postTitleInput {
+	width: 100%;
+	border: 0px;
+	padding: 3px 5px 3px 5px;
+}
+
+#postTitleInput:focus {
+	border: 0px;
+	outline: none;
+}
+
+#postTitleInput:hover {
+	cursor: default;
+}
+
+#postWriterInputTd {
+	width: 20%;
+}
+
+#postWriterInputTd {
+	width: 20%;
+}
+
+#writtenTimeTd {
+	width: 15%;
+}
+
+#readCountTd {
+	width: 15%;
+	border-right: 1px solid #ef837b;
+}
+
+.postInput {
+	width: 100%;
+	border: 0px;
+	padding: 3px 5px 3px 5px;
+}
+
+.postInput:focus {
+	border: 0px;
+	outline: none;
+}
+
+.postInput:hover {
+	cursor: default;
+}
+
+.postTag {
+	width: 10%;
+	text-align: center;
+	font-size:16px;
+	color: white;
+	background-color: #ef837b;
+}
+
+#postContentDiv {
+	width: 100%;
+	min-height: 600px;
+	border-top: 1px solid #ef837b;
+	border-bottom: 1px solid #ef837b;
+	padding: 10px 30px 10px 30px;
+}
+
+#contentDiv {
+	min-height: 500px;
+}
+
+#likeDiv {
+	height: 80px;
+	text-align: center;
+}
+
+.likeBtn {
+	width: 100px;
+	height: 40px;	
+	background-color: white;
+	border: 1px solid #ef837b;
+	color: #ef837b;
+}
+
+.onLike {	
+	background-color: #ef837b;
+	color: white;
+}
+
+#modifyPostBtnBox {
+	width: 100%;
+	text-align: right;
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
+#listPageBtn {
+	width: 100px;
+	height: 30px;
+	color: #b9b9b9;
+	background-color: white;
+	border: 1px solid #b9b9b9;
+}
+
+#listPageBtn:hover {
+	color: white;
+	background-color: #b9b9b9;
+}
+
+#modifyPostBtn {
+	width: 100px;
+	height: 30px;
+	color: #ef837b;
+	background-color: white;
+	border: 1px solid #ef837b;
+}
+
+#modifyPostBtn:hover {
+	color: white;
+	background-color: #ef837b;
+}
+
+#deletePostBtn {
+	width: 100px;
+	height: 30px;
+	color: #A52A2A;
+	background-color: white;
+	border: 1px solid #A52A2A;
+}
+
+#deletePostBtn:hover {
+	color: white;
+	background-color: #A52A2A;
+}
+
+.modal-title {
+	font-size: 20px;
+}
+
+.modal-body {
+	padding: 20px !important;
+}
+
+.close {
+	font-size: 14px !important;	
+}
+
+.btn-danger {
+	padding: 8.5px 15px !important;
+}
+
+.btn-danger:hover {
+	border: 1px solid #dc3545;
+}
+
+.pagination {
+	display: flex;
+	justify-content: center;
+}
+
+.disabled {
+	color: #EBEBEB !important;
+	background-color:white !important; 
+	border-color:white !important;
+}
+
+#replyInputContainer {
+	position: relative;
+	margin-bottom: 10px;
+}
+
+.replyInput {
+	width: 100%;
+	height: 80px;
+	resize: none;
+	border: 1px solid rgba(239, 131, 123, 0.5);
+	padding: 10px 100px 10px 30px;
+}
+
+.replyInput:focus {
+	outline: none;
+}
+
+#noIdReplyInput {
+	text-align: center;
+	line-height: 60px;
+	padding-right: 0px;
+}
+
+#replyInputBtn {
+	position: absolute;
+	bottom: 20px;
+	right: 25px;
+	z-index:3;
+	width: 80px;
+	height: 30px;
+	font-size: 12px;
+	background-color: white;
+	color: #ef837b;
+	border: 0px;
+	vertical-align: middle;
+}
+
+#replyTable {
+	border: 0px;
+}
+
+.replyWriterImgTd {
+	width: 100px;
+	padding: 0px 20px 0px 20px;
+}
+
+.replyWriterImg {
+	width: 60px;
+	height: 60px;
+}
+
+.replyWriterTd {
+	font-weight: 800;
+	padding: 1px;
+	height: 26px;
+}
+
+.writeTimeTr {
+	color: #b9b9b9;
+	font-size: 12px;
+}
+
+.writeTime {
+	width: 80px;
+}
+
+#replyTitle {
+	font-size: 20px;
+	padding: 5px 0px 5px 10px;
+	color: #ef837b;
+}
+
+#replyDiv {
+/* 	border-top: 1px solid #ef837b; */
+	border-bottom: 1px solid #ef837b;
+}
+
+.removeReplyBtn, .modifyReplyBtn {
+	border: 0px;
+	background-color: white;
+	color: #b9b9b9;
+	
+}

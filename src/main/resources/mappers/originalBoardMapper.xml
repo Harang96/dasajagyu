@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.cafe24.goott351.mappers.originalBoardMapper">
+  <select id="selectBoardNo" resultType="int">
+		select max(board_no) as max from board
+ </select>
+ 
+	<insert id="insertBoard">
+	insert into board(category_no, board_title, board_content, uuid, original_category) values(3, #{boardTitle}, #{boardContent}, #{uuid}, #{originalCategory})
+	</insert>
+	
+	<select id="getAllBoardWithSearch" resultType="OriginalBoardVO">
+	select b.*, c.nickname, bc.board_category_name
+	from board b 
+	inner join customers c on b.uuid = c.uuid
+	inner join board_category bc on bc.board_category_no = b.original_category 
+	where b.category_no = #{categoryNo} and b.original_category = #{originalCategory} order by write_date desc limit #{startRowIndex}, #{viewPostCntPerPage}
+	</select>
+	
+	<select id="getUploadedFiles" resultType="OriginalImgVO">
+	select img_no, img_ext, img_size, img_origin_name, base64, board_no from image where board_no = #{boardNo}
+	</select>
+	
+	<select id="getBoardByNo" resultType="OriginalBoardVO">
+		select b.*, c.nickname , bc.board_category_name
+		from board b 
+		inner join customers c on b.uuid = c.uuid 
+		inner join board_category bc on bc.board_category_no = b.original_category 
+		where board_no = #{boardNo} 
+
+	</select>
+	
+	<select id="getPeopleWhoLikesBoard" resultType="string">
+	 select uuid from board_likelog where board_no = #{boardNo}
+	</select>
+	
+	<insert id="like">
+	 insert into board_likelog(uuid, board_no) values(#{who}, #{boardNo})
+	</insert>
+	
+	<select id="incDecLikeCount">
+	update board set board_like = board_like + #{n} where board_no = #{boardNo}
+	</select>
+	
+	<select id="getWriterByNo" resultType="string">
+		select writer from board where board_no = #{boardNo}
+	</select>
+	
+	<select id="getHourDiffReadTime" resultType="int">
+		select read_log(hour,
+ 		(select read_time from readcountprocess where ip_addr = #{ipaddr} and board_no = #{boardNo}), now()) as hourDiff
+	</select>
+	
+	<select id="getReadCountProcess" resultType="com.cafe24.goott351.domain.OriginalBoardReadCountProcessDTO">
+		select * from readcountprocess where ip_addr = #{ipaddr} and board_no = #{boardNo} 
+	</select>
+	
+	<update id="updateReadCount">
+		update board set board_read = board_read + 1 where board_no = #{boardNo}
+	</update>
+	
+	<insert id="insertReadCountProcess">
+		 insert into readcountprocess(ip_addr, board_no)
+  			values(#{ipaddr}, #{boardNo})
+	</insert>
+	
+	<delete id="dislike">
+		delete from board_likelog where board_no = #{boardNo}
+	</delete>
+	
+	<select id="getBoardCategory" resultType="BoardCategoryVO">
+		select * from board_category
+	</select>
+	
+	<select id="selectCategory" resultType="BoardCategoryVO">
+		select * from board_category	
+	</select>
+	
+	<select id="selectEditRead" resultType="OriginalBoardVO">
+		select * from board where board_no = #{boardNo} 
+	</select>
+	
+	<update id="updateEdit">
+		update board set board_title = #{boardTitle}, board_content = #{boardContent}, original_category = #{originalCategory} where board_no = #{boardNo}
+	</update>
+	
+	
+	<select id="getTotalBoardCntWithCate" resultType="int">
+		select count(*) from board where original_category = #{originalCategory}
+	</select>
+	
+	<insert id="insertUploadedFile">
+		insert into image(img_ext, img_size, img_new_name, img_origin_name, base64, board_no) value (#{imgExt}, #{imgSize}, #{imgNewName}, #{imgOriginName}, #{base64}, #{boardNo})
+	</insert>
+	
+	<select id="getImgFile" resultType="OriginalImgVO">
+		select img_ext as ext, img_new_name as newFileName, img_origin_name as FileName, img_size as imgSize, base64 as base64String from image where board_no = #{boardNo}
+	</select>
+	<delete id="deleteImgCategory">
+		delete from board where board_no = #{boardNo}
+	</delete>
+	<insert id="replyInsert">
+		insert into reply(reply_content, board_no, uuid) value (#{replyContent}, #{boardNo}, #{uuid})
+	</insert>
+	<select id="getReplyContent" resultType="OriginalBoardReplyVO">
+		select r.reply_no, r.reply_content, r.board_no, r.uuid , c.nickname from reply r inner join customers c on r.uuid = c.uuid where r.board_no = #{boardNo}
+	</select>
+	<delete id="deleteReply">
+		delete from reply where reply_no = #{replyNo} 
+	</delete>
+  </mapper>	

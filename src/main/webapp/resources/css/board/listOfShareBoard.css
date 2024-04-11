@@ -1,0 +1,268 @@
+@charset "UTF-8";
+
+#spanTotalPostCnt {
+	font-size: 14px; 
+	font-weight: normal; 
+	color:#ef837b;
+}
+
+.listHead {
+	text-align: center;
+}
+
+.boardNo {
+	width: 8%;
+	max-width: 8%;
+	text-align: center;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.boardTitle {
+	width: 51%;
+	max-width: 51%;
+	padding-left: 10px;
+	padding-right: 10px;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.writer {
+	width: 12%;
+	max-width: 12%;
+	text-align: center;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.writeTime {
+	width: 18%;
+	max-width: 18%;
+	padding: 0px 0px 0px 5px;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+/* 	text-align: center; */
+}
+
+.readCount {
+	width: 8%;
+	max-width: 8%;
+	text-align: center;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.likeCount {
+	width: 8%;
+	max-width: 8%;
+	text-align: center;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.listTag, .listTag td {
+	border-collapse: collapse;
+}
+
+.listTag {
+	border-bottom: 1px solid #ef837b80;
+}
+
+.listTag td {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.listTag:first-child {
+	border-top: 1px solid #ef837b80;
+}
+
+.listTag:hover {
+	color: #ef837b;
+	cursor: pointer;
+/* 	border: 1px solid #ef837b; */
+}
+
+#listTable {
+	height: 780px;
+}
+
+.pagination {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 0px !important;
+}
+
+#writePostBtnBox {
+	width: 100%;
+	text-align: right;
+	margin-top: 5px;
+/* 	padding-right: 3%; */
+}
+
+#writePostBtn {
+	width: 100px;
+	height: 30px;
+	color: #ef837b;
+	background-color: white;
+	border: 1px solid #ef837b;
+}
+
+#writePostBtn:hover {
+	color: white;
+	background-color: #ef837b;
+}
+
+.disabled {
+	color: #EBEBEB !important;
+	background-color:white !important; 
+	border-color:white !important;
+}
+
+.rightAside {
+	padding-left: 30px !important;
+}
+
+#searchResetBtn {
+	margin-right: 2px;
+	font-size: 13px;
+	width: 60px;
+	height: 28px;
+	color: #ef837b;
+	background-color: white;
+	border: 1px solid #ef837b;
+	float: right;
+}
+
+#searchResetBtn:hover {
+	color: white;
+	background-color: #ef837b;
+}
+
+.searchSelect {
+	height: 28px;
+	float:right;
+	font-size: 13px;
+	padding: 4px;
+	border: 1px solid #ced4da;
+	color: #333333;
+}
+
+.searchSelect:focus {
+	outline: none;
+	border: 1px solid #ef837b;
+}
+
+.searchSelect:hover {
+	cursor: pointer;
+}
+
+.optionsOfSelect {
+	font-size: 12px;
+}
+
+.popPostLi {
+	padding: 5px;
+	border-bottom: 1px solid #ef837b80;
+	margin-bottom: 0px !important;
+}
+
+.popPostLi:last-child {
+	border-bottom: none;
+}
+
+.popPostLi:hover {
+	background-color: #ef837b;
+	color: white;
+	cursor: pointer;
+}
+
+.span1st {
+	width: 50px; 
+	max-width: 50px;
+	padding-left: 5px;
+	color: #ef837b;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.span2nd {
+	width: 65px;	
+	max-width: 65px;	
+	padding-left: 5px;
+	color: #ef837b;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.popPostLi:hover .span1st, .popPostLi:hover .span2nd {
+	color: white;
+}
+
+.spanTitle {
+	width: 180px;
+	max-width: 180px;
+	padding-left: 5px;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.spanWriter {
+	width: 60px;
+	max-width: 60px;
+	padding-left: 5px;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.spanWriteTime {
+	width: 85px;
+	max-width: 85px;
+	padding-left: 5px;
+	font-size: 12px;
+	vertical-align: middle;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.spanRead {
+	width: 60px;
+	max-width: 60px;
+	padding-left: 5px;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.spanLike {
+	width: 85px;
+	max-width: 85px;
+	padding-left: 5px;
+	white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+#noListMsg {
+	text-align: center;
+}
+
+#shareBoardHeader {
+	background-color: rgba(239, 131, 123, 0.7) !important;
+}
+
+.page-title {
+	color: white !important;
+}
+

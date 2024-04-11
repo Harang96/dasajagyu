@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.eventBoardMapper">
+
+	<insert id="insertNewBoard">
+		insert into event(start_date, end_date, title,
+		content)
+		values(#{startDate}, #{endDate}, #{title}, #{content})
+	</insert>
+
+	<insert id="saveEventImage">
+		insert into event_img(event_no, original_imgname,
+		new_imgname, img_size,
+		mainimg_filepath, eventimg_identify, img_url)
+		values(#{eventNo},
+		#{originalImgname}, #{newImgname}, #{imgSize},
+		#{mainimgFilepath},
+		#{eventimgIdentify}, #{imgUrl})
+	</insert>
+
+	<select id="getEventNo" resultType="int">
+		select max(event_no) as maxNo
+		from event
+	</select>
+
+	<select id="getMainEvent"
+		resultType="com.cafe24.goott351.domain.EventVo">
+		select e.*, ei.new_imgname as newImgname , ei.img_url as
+		imgUrl
+		from event e inner join event_img ei
+		on e.event_no = ei.event_no
+		where ei.eventimg_identify = 1
+		order by event_no desc
+	</select>
+
+	<select id="getDetailEvent"
+		resultType="com.cafe24.goott351.domain.EventVo">
+		select e.*, ei.new_imgname as newImgname , ei.img_url as
+		imgUrl
+		from event e inner join event_img ei
+		on e.event_no = ei.event_no
+		where ei.eventimg_identify = 2
+		order by event_no desc
+	</select>
+
+	<select id="getEventDetail"
+		resultType="com.cafe24.goott351.domain.EventVo">
+		select event_no, start_date, end_date, title, content
+		from
+		event
+		where event_no = #{eventNo}
+	</select>
+
+	<select id="getImgList"
+		resultType="com.cafe24.goott351.domain.EventImgVo">
+		select eventimg_no, original_imgname, img_url, event_no, new_imgname, eventimg_identify
+		from event_img where event_no = #{eventNo}
+	</select>
+	
+	<update id="updateEvent">
+		update event set start_date = #{startDate}, end_date = #{endDate}, title = #{title}, content = #{content} where event_no = #{eventNo};
+	</update>
+	
+	
+	<delete id="deleteEvent">
+		delete from event where event_no = #{eventNo}
+	</delete>
+	
+	<delete id="deleteImgEvent">
+		delete from event_img where event_no = #{eventNo}
+	</delete>
+	
+	<select id="selectListAll" resultType="com.cafe24.goott351.domain.CustomerVO">
+		select is_admin from customers
+	</select>
+</mapper>

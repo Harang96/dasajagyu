@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.productMapper">
+	<!-- 상품 구분별 상품 총 수 -->
+  	<select id="selectTotalProductCntByClass" resultType="int">
+		SELECT count(*) FROM products
+		WHERE class_no = #{classNo}
+		AND is_sales='Y'
+	</select>
+	
+	<!--  할인 상품 총 수 -->
+  	<select id="selectDCProductCnt" resultType="int">
+		SELECT count(*) FROM products
+		WHERE discount_rate != 0
+		AND is_sales='Y'
+	</select>
+	
+	<!--  추천 상품 총 수 -->
+  	<select id="selectMDProductCnt" resultType="int">
+		SELECT count(*) FROM products
+		WHERE is_recommend = 'Y'
+		AND is_sales='Y'
+	</select>
+
+	<!--  작품별 상품 총 수 -->
+  	<select id="selectProductListByOrigin" resultType="int">
+		SELECT count(*) FROM products
+		<where>
+		<if test="originalClass != null">
+			original_class = #{originalClass}
+		</if>
+		AND is_sales='Y'
+		</where>
+	</select>
+
+	<!--  전체 상품 총 수 -->
+  	<select id="selectAllProductCnt" resultType="int">
+		SELECT count(*) FROM products
+		AND is_sales='Y'
+		
+	</select>
+
+	<!--  검색 조건에 따른 상품 총 수 -->
+  	<select id="getTotalProductCntBySearch" resultType="int">
+		SELECT count(*) FROM products p
+		INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+		<where>
+			<choose>
+				<when test="searchCata == null and searchWord != ''">
+		            p.product_name like CONCAT('%', #{searchWord}, '%') OR p.original_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+				<when test="searchCata == 'productName' and searchWord != ''">
+		            p.product_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+				<when test="searchCata == 'manufacturerName' and searchWord != ''">
+					m.manufacturer_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+				<when test="searchCata == 'originalName' and searchWord != ''">
+					p.original_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+			</choose>		
+		</where>
+		<if test="classNo != null and classNo != 0">
+			AND p.class_no = #{classNo}
+		</if>
+		AND is_sales='Y'
+	</select>
+
+	<!-- 검색 조건에 따른 상품 조회-->
+  	<select id='selectProductBySearch' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+		<where>
+			<choose>
+				<when test="searchCata == null and searchWord != ''">
+	       			p.product_name like CONCAT('%', #{searchWord}, '%') OR p.original_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+				<when test="searchCata == 'productName' and searchWord != ''">
+					p.product_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+				<when test="searchCata == 'manufacturerName' and searchWord != ''">
+					m.manufacturer_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+				<when test="searchCata == 'originalName' and searchWord != ''">
+					p.original_name like CONCAT('%', #{searchWord}, '%')
+				</when>
+			</choose>		
+		</where>
+		<if test="classNo != null and classNo != 0">
+			AND p.class_no = #{classNo}
+		</if>
+			AND is_sales='Y'
+	    <choose>
+		    <when test="searchType == 'dateAcs'">
+			    ORDER BY p.reg_date
+		    </when>
+		    <when test="searchType == 'dateDecs'">
+			    ORDER BY p.reg_date DESC
+		    </when>
+		    <when test="searchType == 'priceAcs'">
+			    ORDER BY p.sales_cost 
+		    </when>
+		    <when test="searchType == 'priceDecs'">
+			    ORDER BY p.sales_cost DESC 
+		    </when>
+		    <when test="searchType == 'disctountAcs'">
+			    ORDER BY p.discount_rate 
+		    </when>
+		    <when test="searchType == 'disctountDecs'">
+			    ORDER BY p.discount_rate DESC 
+		    </when>		    
+		    <otherwise>
+   			    ORDER BY p.reg_date
+		    </otherwise>
+	    </choose>
+	    <if test="startRowIndex != null">
+			LIMIT #{startRowIndex}, #{pageProductCnt}
+	    </if>
+  	</select>
+  	
+	<!-- 상품 분류별 상품 선택 with 검색 조건-->
+  	<select id='selectProductsByClass' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE p.class_no = #{classNo}
+	    AND is_sales='Y'
+	    <choose>
+		    <when test="searchType == 'dateAcs'">
+			    ORDER BY p.reg_date
+		    </when>
+		    <when test="searchType == 'dateDecs'">
+			    ORDER BY p.reg_date DESC
+		    </when>
+		    <when test="searchType == 'priceAcs'">
+			    ORDER BY p.sales_cost 
+		    </when>
+		    <when test="searchType == 'priceDecs'">
+			    ORDER BY p.sales_cost DESC 
+		    </when>
+   		    <otherwise>
+   			    ORDER BY p.reg_date
+		    </otherwise>
+	    </choose>
+	    <if test="startRowIndex != null">
+	    	LIMIT #{startRowIndex}, #{pageProductCnt}
+	    </if>
+  	</select>
+  	
+ 	<!-- 할인 상품 선택 -->
+  	<select id='selectDcProducts' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE p.discount_rate != 0
+	    AND is_sales='Y'
+   	    <choose>
+		    <when test="searchType == 'dateAcs'">
+			    ORDER BY p.reg_date
+		    </when>
+		    <when test="searchType == 'dateDecs'">
+			    ORDER BY p.reg_date DESC
+		    </when>
+		    <when test="searchType == 'priceAcs'">
+			    ORDER BY p.sales_cost 
+		    </when>
+		    <when test="searchType == 'priceDecs'">
+			    ORDER BY p.sales_cost DESC 
+		    </when>
+		    <when test="searchType == 'disctountAcs'">
+			    ORDER BY p.discount_rate 
+		    </when>
+		    <when test="searchType == 'disctountDecs'">
+			    ORDER BY p.discount_rate DESC 
+		    </when>
+		    <otherwise>
+   			    ORDER BY p.reg_date
+		    </otherwise>
+	    </choose>
+	    LIMIT #{startRowIndex}, #{pageProductCnt}
+  	</select>
+  	
+ 	<!-- 추천 상품 선택 -->
+ 	<select id='selectMdProducts' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE is_recommend = 'Y'
+	    AND is_sales='Y'
+   	    <choose>
+		    <when test="searchType == 'dateAcs'">
+			    ORDER BY p.reg_date
+		    </when>
+		    <when test="searchType == 'dateDecs'">
+			    ORDER BY p.reg_date DESC
+		    </when>
+		    <when test="searchType == 'priceAcs'">
+			    ORDER BY p.sales_cost 
+		    </when>
+		    <when test="searchType == 'priceDecs'">
+			    ORDER BY p.sales_cost DESC 
+		    </when>
+		    <otherwise>
+   			    ORDER BY p.reg_date
+		    </otherwise>
+	    </choose>
+	    LIMIT #{startRowIndex}, #{pageProductCnt}
+  	</select>
+  	
+	<!-- 상품 분류별 상품 선택 -->
+  	<select id='selectProductsByOriginal' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+		<where>
+		<if test="originalClass != null">
+			p.original_class = #{originalClass}
+		</if>
+			AND p.is_sales='Y'
+		</where>
+     	<choose>
+		    <when test="searchType == 'dateAcs'">
+			    ORDER BY p.reg_date
+		    </when>
+		    <when test="searchType == 'dateDecs'">
+			    ORDER BY p.reg_date DESC
+		    </when>
+		    <when test="searchType == 'priceAcs'">
+			    ORDER BY p.sales_cost 
+		    </when>
+		    <when test="searchType == 'priceDecs'">
+			    ORDER BY p.sales_cost DESC 
+		    </when>
+		    <otherwise>
+   			    ORDER BY p.reg_date
+		    </otherwise>
+	    </choose>
+	    LIMIT #{startRowIndex}, #{pageProductCnt}
+  	</select>  	
+  	
+ 	<!-- 추천 상품 선택 -->
+ 	<select id='selectProduct' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE product_no = #{productNo}
+	    AND is_sales='Y'
+  	</select> 
+
+	<!-- 베스트 셀러 상품 번호 가져오기 -->
+	<select id="getBestSeller" resultType="int">
+		SELECT DISTINCT o.product_no
+		FROM order_products o
+		INNER JOIN products p on p.product_no =o.product_no
+		WHERE p.is_sales != 'N'
+		GROUP BY o.product_no
+		ORDER BY sum(o.quantity) DESC
+		LIMIT 30;
+	</select>
+	
+		<!--  모든 상품 목록 가져오기 -->
+	<select id='selectAllProductsForBest' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	</select>
+	
+
+ 	<!-- 상품 상세 이미지 선택 -->
+ 	<select id='selectProductImgList' resultType="ProductImgVO">
+	    SELECT *
+	    FROM product_img
+	    WHERE product_no = #{productNo}
+  	</select> 
+
+ 	<!-- 상품 상세 이미지 선택 -->
+ 	<select id='selectOriginals' resultType="OriginalsVO">
+	    SELECT *
+	    FROM originals
+	    WHERE original_class = #{originalClass}
+  	</select> 
+  	
+	<!-- 랜덤 추천 상품 4가지 선택 -->
+ 	<select id='selectMdProductRandomList' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE is_recommend = 'Y'
+	    AND is_sales='Y'
+	    ORDER BY rand()
+	    Limit 4
+  	</select> 
+  	
+  	<update id="updateClassCode">
+  		UPDATE products SET class_no = 30 WHERE product_no = #{productNo}
+  	</update>
+
+	<select id="selectAllOriginals" resultType="OriginalsVO">
+		SELECT * FROM originals ORDER BY original_class
+	</select>
+
+	<select id="selectAllManufacturers" resultType="ManufacturersVO">
+		SELECT * FROM manufacturers ORDER BY manufacturer_no
+	</select>
+  	
+  	<insert id="insertLikeCount">
+  		INSERT INTO product_likelog (customer_id, product_no) 
+  		VALUES (#{uuid}, #{productNo})
+  	</insert>
+  	
+  	<delete id="deleteLikeCount">
+  		DELETE FROM product_likelog 
+  		WHERE product_no = #{productNo} AND customer_id = #{uuid}
+  	</delete>
+
+	<update id="updateLikeCountByBoardNo">
+		UPDATE products SET like_cnt = like_cnt + #{n}
+		WHERE product_no = #{productNo}
+	</update>
+  	
+  	<select id="selectLikeLogByUserId" resultType="int">
+  		SELECT product_no FROM product_likelog WHERE customer_id = #{uuid}
+  	</select>
+  	
+  	<!-- 주문한 상품 정보 가져오기 -->
+  	<select id="selectProductInfo" resultType="ProductVO">
+		SELECT * FROM products
+		WHERE product_no = #{productNo}
+	</select>
+	
+	<!-- 주문한 상품 재고 업데이트 -->
+	<update id="updateOrderdProductQty">
+		update products set current_qty = current_qty - #{qty} where product_no = #{productNo}
+	</update>
+	
+	<!--  ADMIN 부분 시작 -->
+
+	<!--  모든 상품 목록 가져오기 -->
+	<select id='selectAllProducts' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p 
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    <where>
+	        <choose>
+	            <when test='classNo != null and classNo != 0'>
+	               p.class_no = #{classNo}
+	            </when>   
+	            <when test='originalClass != null and originalClass != ""'>
+	               p.original_class = #{originalClass}
+	            </when>
+	            <when test='manufacturerNo != null and manufacturerNo != 0'>
+	               p.manufacturer_no = #{manufacturerNo}
+	            </when>
+	        </choose>
+	        <if test='searchWord != null and searchWord != ""'>
+	           AND p.product_name like CONCAT('%', #{searchWord}, '%')
+	        </if>
+	    </where>
+   	    <choose>
+		    <when test="searchType == 'dateAcs'">
+			    ORDER BY p.reg_date
+		    </when>
+		    <when test="searchType == 'dateDecs'">
+			    ORDER BY p.reg_date DESC
+		    </when>
+		    <when test="searchType == 'priceAcs'">
+			    ORDER BY p.sales_cost 
+		    </when>
+		    <when test="searchType == 'priceDecs'">
+			    ORDER BY p.sales_cost DESC 
+		    </when>
+		    <when test="searchType == 'disctountAcs'">
+			    ORDER BY p.discount_rate 
+		    </when>
+		    <when test="searchType == 'disctountDecs'">
+			    ORDER BY p.discount_rate DESC 
+		    </when>
+		    <when test="searchType == 'currentQtyAcs'">
+			    ORDER BY p.current_qty 
+		    </when>
+		    <when test="searchType == 'currentQtyDecs'">
+			    ORDER BY p.current_qty DESC 
+		    </when>
+		    <otherwise>
+   			    ORDER BY p.reg_date
+		    </otherwise>
+	    </choose>
+	    LIMIT #{startRowIndex}, #{pageProductCnt}
+	</select>
+	
+	<!-- 	검색 조건에 따른 상품 검색	 -->
+	<select id="selectAllProductsCntBySearch" resultType="int">
+		SELECT count(*)
+	    FROM products
+	    <where>
+	        <choose>
+	            <when test='classNo != null and classNo != 0'>
+	               class_no = #{classNo}
+	            </when>   
+	            <when test='originalClass != null and originalClass != ""'>
+	               original_class = #{originalClass}
+	            </when>
+	            <when test='manufacturerNo != null and manufacturerNo != 0'>
+	               manufacturer_no = #{manufacturerNo}
+	            </when>
+	        </choose>
+	        <if test='searchWord != null and searchWord != ""'>
+	           AND product_name like CONCAT('%', #{searchWord}, '%')
+	        </if>
+	   	</where>
+	</select>
+	
+	<!-- 	상품 정보 업데이트 -->
+	<update id="updateProduct">
+		UPDATE products
+		   SET product_name = #{productName},
+    		   class_no = #{classNo},
+    		   manufacturer_no = #{manufacturerNo},
+    		   original_name = #{originalName}, 
+    		   original_class = #{originalClass},
+    		   sales_cost = #{salesCost},
+    		   discount_rate = #{discountRate},
+    		   current_qty = #{currentQty},
+    		   is_recommend = #{isRecommend}
+	     WHERE product_no = #{productNo}
+	</update>
+	
+	<!-- 	상품 임시 삭제 -->
+	<update id="deleteProduct">
+		UPDATE products
+		   SET is_sales = 'N'
+	     WHERE product_no = #{productNo}
+	</update>
+	<!-- 	상품 완전 삭제 -->
+	<delete id="deleteProductTotally">
+		DELETE FROM products
+		 WHERE product_no = #{productNo}
+	</delete>
+	<!-- 	삭제할 상품 이미지 정보 불러오기 -->
+	<select id="getProductImagesByProductNo" resultType="ProductImgVO">
+		SELECT * 
+		  FROM product_img
+		 WHERE product_no = #{productNo}
+	</select>
+	<!-- 	상품 상세 이미지 정보 삭제 -->
+	<delete id="deleteProductImage">
+		 DELETE FROM product_img
+		 WHERE img_no = #{imgNo}
+	</delete>
+	<!-- 	상품 임시 삭제 취소 (재 활성화) -->
+	<update id="restoreProduct">
+		UPDATE products
+		   SET is_sales = 'Y'
+	     WHERE product_no = #{productNo}
+	</update>
+	<!-- 	신상품 등록 -->
+  	<insert id="insertNewProduct">
+  		INSERT INTO products (product_name, original_name, original_class, manufacturer_no,
+  							  class_no, class_month, sales_cost, purchase_cost, current_qty,
+							  thumbnail_img, materials, size, is_sales)
+  		VALUES (#{productName}, #{originalName}, #{originalClass}, #{manufacturerNo},
+  				#{classNo}, #{classMonth}, #{salesCost}, #{purchaseCost}, #{currentQty},
+  				#{thumbnailImg}, #{materials}, #{size}, #{isSales})
+  	</insert>
+	<!-- 	상품 마지막 번호 가져오기 -->
+	<select id="getNo" resultType="int">
+		SELECT MAX(product_no) AS max_no
+		  FROM products
+	</select>
+	<!-- 	상품 상세 이미지 등록 -->
+  	<insert id="insertProductImgFile">
+  		INSERT INTO product_img (product_no, original_filename, new_filename, img_url, img_size, img_ext)
+  		VALUES (#{productNo}, #{originalFilename}, #{newFilename}, #{imgUrl}, #{imgSize}, #{imgExt})
+  	</insert>
+	<!-- 	제조사 등록 -->
+  	<insert id="insertManufacturer">
+  		INSERT INTO manufacturers (manufacturer_name)
+  		VALUES (#{manufacturerName})
+  	</insert>	
+	<!--   	제조사 수정 -->
+  	<update id="updateManufacturer">
+  		UPDATE manufacturers
+  		   SET manufacturer_name = #{manufacturerName}
+  	 	 WHERE manufacturer_no = #{manufacturerNo}
+  	</update>	
+	<!--   	작품 카테고리 추가 -->	
+  	<insert id="insertCategory">
+  		INSERT INTO originals (original_class, class_name)
+  		VALUES (#{originalClass}, #{className})
+  	</insert>	
+	<!-- 	작품 카테고리 수정  	 -->
+  	<update id="updateCategory">
+  		UPDATE originals
+  		   SET class_name = #{className}
+  	 	 WHERE original_class = #{originalClass}
+  	</update>
+	<!--   	작품 카테고리 삭제 -->
+  	<delete id="deleteCategory">
+  		DELETE FROM originals
+  		 WHERE original_class = #{originalClass}
+  	</delete>
+	<!--   	제조사 삭제 -->
+  	<delete id="deleteManufacturer">
+  		DELETE FROM manufacturers
+  		 WHERE manufacturer_no = #{manufacturerNo}
+  	</delete>
+  	
+	<!-- 문의하기 등록하는 쿼리 -->
+	<insert id="insertProductQnA">
+	    INSERT INTO service_board (
+			        sv_board_regiDate, 
+		    	    sv_board_content, 
+	        		product_no, 
+	        		uuid, 
+	        		sv_board_title
+	    ) VALUES (
+	        NOW(), #{svBoardContent}, #{productNo}, #{uuid}, #{svBoardTitle}
+	    )
+	</insert>
+
+
+
+	<!-- 문의하기 리스트 가져오는 쿼리 -->
+	<select id="getProductQnAList" resultType="ServiceBoardVO">
+	     SELECT sb.sv_board_title, 
+	    		sb.sv_board_No,
+	    		sb.sv_board_content, 
+	    		sb.product_no,
+	    		sb.sv_isDelete,
+	    		sb.uuid, 
+	    		sb.sv_board_regiDate, 
+	    		sb.sv_board_answer, 
+	    		c.nickname,
+	    		c.user_img
+	       FROM service_board sb, customers c
+	      WHERE sb.uuid = c.uuid
+	        AND product_no = #{productNo}
+	        AND sb.sv_isDelete = 'N'
+	</select>
+	
+	<!-- 리뷰 가져오는 쿼리 -->
+	<select id="selectProductReview" resultType="ProductReviewVO">
+		SELECT c.nickname, 
+			   r.review_no,
+			   r.product_no,
+			   r.review_content,
+			   r.review_star,
+			   r.review_date,
+			   c.user_img
+		FROM customers c, review r 
+		WHERE c.uuid = r.uuid and r.product_no = #{productNo}
+	</select>
+
+	<!-- 리뷰 이미지 가져오는 쿼리 -->
+	<select id="selectRevewiImages" resultType="Base64ImgDTO">
+		SELECT img_no, base64, img_size, review_no
+		FROM image 
+		WHERE review_no = #{reviewNo}
+	</select>
+	
+	<select id="selectCountOfReservationProduct" resultType="int">
+		SELECT count(*) 
+		  FROM products 
+	 	 WHERE class_no = 10
+	</select>
+	
+	<select id="selectReservationProduct" resultType="MainReservationProductVO">
+		SELECT product_no,
+			   original_name,
+			   product_name,
+			   sales_cost,
+			   discount_rate,
+			   class_month,
+			   is_recommend,
+			   current_qty,
+			   thumbnail_img
+		  FROM products 
+		 WHERE class_no = 10
+		   AND is_sales = 'Y'
+		 LIMIT 1 offset #{ranNum}
+	</select>
+
+  	<!-- 랜덤한 예약 상품 10개의 정보 가져오기	 -->	
+	<select id='selectRevProductListRand' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	     FROM products p
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE p.class_no = 10
+	      AND p.is_sales='Y'
+	    ORDER BY rand()
+	    Limit 20
+  	</select> 
+  	
+  	<!-- 랜덤한 신규 상품 10개의 정보 가져오기	 -->
+	<select id='selectNewProductListRand' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE p.class_no = 20
+	    AND p.is_sales='Y'
+	    ORDER BY rand()
+	    Limit 20
+  	</select> 
+  	
+  	<!-- 랜덤한 추천 상품 10개의 정보 가져오기 -->	
+	<select id='selectMdProductListRand' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE p.is_recommend = 'Y'
+	    AND p.is_sales='Y'
+	    ORDER BY rand()
+	    Limit 20
+  	</select> 
+  	
+  	<!-- 베스트 상품 번호 가져오기 -->
+	<select id="selectBestProductNo" resultType="int">
+		SELECT DISTINCT o.product_no
+		FROM order_products o
+		INNER JOIN products p on p.product_no =o.product_no
+		WHERE p.is_sales != 'N'
+		GROUP BY o.product_no
+		ORDER BY sum(o.quantity) DESC
+		LIMIT 1;
+	</select>
+  	
+  	  	<!-- 랜덤한 추천 상품 10개의 정보 가져오기 -->	
+	<select id='selectBestProductRand' resultType="ProductVO">
+	    SELECT p.*, m.manufacturer_name, o.class_name, pc.class_type
+	    FROM products p
+	    INNER JOIN manufacturers m ON p.manufacturer_no = m.manufacturer_no
+	    INNER JOIN originals o ON p.original_class = o.original_class
+	    INNER JOIN product_class pc ON p.class_no = pc.class_no
+	    WHERE p.product_no = #{bestProductNo }
+  	</select> 
+  	
+  		<!-- 상품 문의하기 전체 리스트 가져오는 기-->
+	<select id="selectAllPdList" resultType="ProductQnAVO">
+	     SELECT sb.sv_board_title, 
+	    		sb.sv_board_No,
+	    		sb.sv_board_content, 
+	    		sb.product_no,
+	    		sb.sv_isDelete,
+	    		sb.uuid, 
+	    		sb.sv_board_regiDate, 
+	    		sb.sv_board_answer, 
+	    		c.nickname,
+	    		c.user_img,
+	    		p.product_name
+	       FROM service_board sb
+	       INNER JOIN customers c ON sb.uuid = c.uuid
+	       INNER JOIN products p ON sb.product_no = p.product_no
+	        AND sb.product_no is not null
+   	    <choose>
+		    <when test="searchType == 'dateAcs'">
+			    ORDER BY sb.sv_board_regiDate
+		    </when>
+		    <when test="searchType == 'dateDecs'">
+			    ORDER BY sb.sv_board_regiDate DESC
+		    </when>
+	    </choose>
+          LIMIT #{startRowIndex}, #{pageProductCnt}
+	</select>
+  	
+  		<!-- 문의하기 수정 하는 쿼리 -->
+	<update id="updatePdQna">
+	    UPDATE service_board SET sv_board_answer = #{svBoardAnswer}
+	    WHERE sv_board_no = #{svBoardNo}
+	</update>
+ 
+  	<select id="getTotalPdQnACnt" resultType="int">
+		SELECT count(*) FROM service_board
+	    WHERE product_no is not null
+	</select>
+  	
+</mapper>

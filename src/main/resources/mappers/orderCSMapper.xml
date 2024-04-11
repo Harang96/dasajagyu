@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.orderCSMapper">
+
+	 <insert id="insertCSImages" parameterType="java.util.List">
+	    insert into image (base64, img_size, cs_order_no)
+	    VALUES
+		    <foreach collection="list" item="item" separator=",">
+		        (#{item.base64}, #{item.imgSize}, #{item.orderNo})
+		    </foreach>
+	 </insert>
+	 
+	 <insert id="insertOrderCS">
+	 	insert into order_cs (order_no, cs_type, product_no, product_quantity, reason_type, reason, is_admin)
+	 	values (#{orderNo}, #{csType}, #{productNo},#{quantity}, #{reasonType}, #{reason}, #{isAdmin})
+	 </insert>
+	 
+	 <select id="selectOrderUUID" resultType="String">
+	 	select customer_id from orders where order_no = #{orderNo}
+	 </select>
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.cafe24.goott351.mappers.adminBoardMapper">
+  
+  	<!-- 검색 조건에 따른 게시판 수 -->
+  	<select id = "getTotalBoardCntBySearch" resultType = "int">
+  		select count(*)
+  		from board b inner join customers c
+  		on b.uuid = c.uuid
+  		<where>
+  			<choose>
+				<when test="searchType == 'boardtitle' and searchWord != ''">
+					 board_title like concat('%', #{searchWord}, '%')
+	 			</when>
+	 			<when test="searchType == 'boardcontent' and searchWord != ''">
+					 board_content like concat('%', #{searchWord}, '%')
+	 			</when>
+	 			<when test="searchType == 'name' and searchWord != ''">
+	 				name like concat('%', #{searchWord}, '%')
+	 			</when>
+	 			<when test="searchType == 'nickname' and searchWord != ''">
+					 nickname like concat('%', #{searchWord}, '%')
+	 			</when>
+  			</choose>
+  		</where>
+  	</select>	
+  
+  	<!-- 검색 조건에 따른 모든 게시판 리스트 -->
+  	<select id="getAllBoardList" resultType="AdminBoardDTO">
+  		select b.board_no, b.category_no, b.header_no, b.board_title, b.board_content, c.name, c.nickname, b.write_date, b.board_like, b.board_read
+		from board b inner join customers c
+		on b.uuid = c.uuid
+		<where>
+  			<choose>
+				<when test="searchType == 'boardtitle' and searchWord != ''">
+					 board_title like concat('%', #{searchWord}, '%')
+	 			</when>
+	 			<when test="searchType == 'boardcontent' and searchWord != ''">
+					 board_content like concat('%', #{searchWord}, '%')
+	 			</when>
+	 			<when test="searchType == 'name' and searchWord != ''">
+	 				name like concat('%', #{searchWord}, '%')
+	 			</when>
+	 			<when test="searchType == 'nickname' and searchWord != ''">
+					 nickname like concat('%', #{searchWord}, '%')
+	 			</when>
+  			</choose>
+  		</where>
+  		<if test="colName == 'boardtitle' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+	 	order by board_title desc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'boardtitle' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+	 	order by board_title asc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'name' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+	 	order by name desc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'name' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+	 	order by name asc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'nickname' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+	 	order by nickname desc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'nickname' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+	 	order by nickname asc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'writedate' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+	 	order by write_date desc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'writedate' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+	 	order by write_date asc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'boardlike' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+	 	order by board_like desc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'boardlike' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+	 	order by board_like asc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'boardread' and colValue == 'desc' and startRowIndex != null and pageProductCnt != null">
+	 	order by board_read desc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+	 	<if test="colName == 'boardread' and colValue == 'asc' and startRowIndex != null and pageProductCnt != null">
+	 	order by board_read asc limit #{startRowIndex}, #{pageProductCnt}
+	 	</if>
+  	</select>
+  	
+  	<!-- 게시판 no로 정보 가져오기 -->
+  	<select id="getBoardDetailInfo" resultType = "AdminBoardDTO">
+  		select b.board_no, b.category_no, b.header_no, b.board_title, b.board_content, c.name, c.nickname, b.write_date, b.board_like, b.board_read
+		from board b inner join customers c
+		on b.uuid = c.uuid
+		where board_no = #{no}
+  	</select>
+  	
+  	<!-- 게시판 글 수정 -->
+  	<update id="updateBoardAdmin">
+  		update board set category_no = #{categoryno}, board_title = #{boardtitle}, board_content = #{boardcontent} where board_no = #{boardno}
+  	</update>
+  	
+  	<!-- 게시글 삭제 -->
+  	<delete id="deleteBoardAdmin">
+  		delete from board where board_no = #{no}
+  	</delete>
+  	
+  	<!-- 관리자 게시글 저장 -->
+  	<insert id="insertBoardAdmin">
+  		insert into board(category_no, board_title, board_content, uuid) values(#{category}, #{title}, #{content}, #{uuid})
+  	</insert>
+  	
+  	<!-- 관리자 글 번호 불러오기 -->
+  	<select id="getBoardNo" resultType = "int">
+  		select max(board_no) from board where uuid = #{uuid} and category_no = #{category} and board_title = #{title}
+  	</select>
+  	
+  	<!-- 관리자 이미지 저장 -->
+  	<insert id="saveBoardImage">
+  		insert into image(img_ext, img_size, img_new_name, img_origin_name, board_no) values(#{imgExt}, #{imgSize}, #{newImgName}, #{originalImgname}, #{no})
+  	
+  	</insert>	
+  
+  </mapper>

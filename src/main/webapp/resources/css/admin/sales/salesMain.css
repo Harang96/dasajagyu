@@ -1,0 +1,154 @@
+@charset "UTF-8";
+
+#graphYear {
+	padding: 5px !important;	
+	font-size: 18px;
+	border: 1px solid #685DD8;
+	border-radius: 5px;
+}
+
+#graphYear:focus {
+	outline: none;	
+}
+
+.dayDes {
+	margin-top: 20px;
+}
+
+#daySalesDate, #dayNetProfitDate {
+	padding: 3px;
+	font-size: 16px;
+	border: 1px solid #685DD8;
+	border-radius: 5px;	
+	margin-bottom: 2px !important;
+}
+
+#daySalesDate:focus, #dayNetProfitDate:focus {
+	outline: none;
+}
+
+#daySalesOutput, #dayNetProfitOutput {
+	font-size: 20px;
+}
+
+#weekSelect {
+	padding: 5px;
+	font-size: 16px;
+	border: 1px solid #685DD8;
+	border-radius: 5px;	
+	margin-top: 20px;
+}
+
+#weekSelect:focus {
+	outline: none;
+}
+
+#weekValueH3 {
+	margin-top: 10px !important;
+	margin-bottom: 14px !important;
+	font-size: 20px;
+}
+
+#csList {
+	padding: 24px;
+	font-size: 18px;
+	width: 100%;
+}
+
+#detailCsListBtn {
+	background-color: rgb(115, 103, 240);
+	color: white;
+	border: 1px solid rgb(115, 103, 240);
+	border-radius: 7px;
+	padding: 8px;
+	font-size: 15px;
+	width: 120px;
+	font-weight: 300;
+	float: right;
+}
+
+#detailCsListBtn:hover {
+	background-color: rgb(104, 93, 216);
+}
+
+.modal-dialog {
+	margin: 30px;
+	width: 100% !important;
+	max-width: 100% !important;
+	text-align: center !important;
+	
+}
+
+.modal-content {
+	width: 95% ;
+}
+
+.page-item {
+	list-style: none;
+	display: flex;
+	flex-direction: row;
+}
+
+#pagingBox {
+	margin-top: 20px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.disabled {
+	color: #EBEBEB !important;
+}
+
+#daySalesDate:hover, #dayNetProfitDate:hover, #graphYear:hover, #weekSelect:hover {
+	cursor: pointer;
+}
+
+#mainCsTableTr th {
+	text-align: center;
+}
+
+.center {
+	text-align: center;
+}
+
+.csNo, .csType {
+	width: 5.37%;
+	max-width: 5.37%;
+}
+
+.orderNo {
+	width: 11.7%;
+	max-width: 11.7%;
+}
+
+.productName {
+	width: 31.41%;
+	max-width: 31.41%;
+	text-align: left;
+}
+
+.productQuantity {
+	width: 7.57%;
+	max-width: 7.57%;
+}
+
+.nickname {
+	width: 6.47%;
+	max-width: 6.47%;
+}
+
+.reason {
+	width: 15.48%;
+	max-width: 15.48%;
+}
+
+.payMethod {
+	width: 7.57%;
+	max-width: 7.57%;
+}
+
+.csDate {
+	width: 9.77%;
+	max-width: 9.77%;
+}

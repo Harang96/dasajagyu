@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+  <configuration>
+  	<settings>
+  		<!-- 자동으로 카멜케이스 규칙으로 변환 -->
+      <setting name="mapUnderscoreToCamelCase" value="true"></setting>
+  	</settings>
+  <typeAliases>
+	<typeAlias alias="ProductVO" type="com.cafe24.goott351.domain.ProductVO"/>
+	<typeAlias alias="ProductPagingVO" type="com.cafe24.goott351.domain.ProductPagingVO"/>
+	<typeAlias alias="ProductImgVO" type="com.cafe24.goott351.domain.ProductImgVO"/>
+	<typeAlias alias="OriginalsVO" type="com.cafe24.goott351.domain.OriginalsVO"/>
+	<typeAlias alias="ManufacturersVO" type="com.cafe24.goott351.domain.ManufacturersVO"/>
+	<typeAlias alias="Top30ProductVO" type="com.cafe24.goott351.domain.Top30ProductVO"/>
+	<typeAlias alias="ProductQnADTO" type="com.cafe24.goott351.domain.ProductQnADTO"/>
+	<typeAlias alias="ProductQnAVO" type="com.cafe24.goott351.domain.ProductQnAVO"/>
+	<typeAlias alias="ServiceBoardVO" type="com.cafe24.goott351.domain.ServiceBoardVO"/>
+	<typeAlias alias="ProductReviewVO" type="com.cafe24.goott351.domain.ProductReviewVO"/>
+	
+	<typeAlias alias="LoginCustomerVO" type="com.cafe24.goott351.domain.LoginCustomerVO"/>
+	<typeAlias alias="ShareBoardVO" type="com.cafe24.goott351.domain.ShareBoardVO"/>
+	<typeAlias alias="ShareBoardImgVO" type="com.cafe24.goott351.domain.ShareBoardImgVO"/>
+	<typeAlias alias="WrittenDateVO" type="com.cafe24.goott351.domain.WrittenDateVO"/>
+	<typeAlias alias="RegisterDTO" type="com.cafe24.goott351.domain.RegisterDTO"/>
+	<typeAlias alias="ShareBoardReplyVO" type="com.cafe24.goott351.domain.ShareBoardReplyVO"/>
+	<typeAlias alias="SalesOrderCsVO" type="com.cafe24.goott351.domain.SalesOrderCsVO"/>
+	
+	<typeAlias alias="CustomerVO" type="com.cafe24.goott351.domain.CustomerVO"/>
+	
+	<typeAlias alias="CartVO" type="com.cafe24.goott351.domain.CartVO"/>
+	<typeAlias alias="OrderVO" type="com.cafe24.goott351.domain.OrderVO"/>
+	<typeAlias alias="OrderProductVO" type="com.cafe24.goott351.domain.OrderProductVO"/>
+	<typeAlias alias="OrderBillingVO" type="com.cafe24.goott351.domain.OrderBillingVO"/>
+	<typeAlias alias="DeliveryVO" type="com.cafe24.goott351.domain.DeliveryVO"/>
+
+	<typeAlias alias="FindIdVO" type="com.cafe24.goott351.domain.FindIdVO"/>
+
+	<typeAlias alias="RegisterDeliveryDTO" type="com.cafe24.goott351.domain.RegisterDeliveryDTO"/>
+	<typeAlias alias="RegisterPointLog" type="com.cafe24.goott351.domain.RegisterPointLog"/>
+	<typeAlias alias="OrderShippingDTO" type="com.cafe24.goott351.domain.OrderShippingDTO"/>
+	<typeAlias alias="CustomerCntVO" type="com.cafe24.goott351.domain.CustomerCntVO"/>
+	<typeAlias alias="AdminBoardDTO" type="com.cafe24.goott351.domain.AdminBoardDTO"/>
+	<typeAlias alias="DeliveryDTO" type="com.cafe24.goott351.domain.DeliveryDTO"/>
+
+	<typeAlias alias="ProductReviewVO" type="com.cafe24.goott351.domain.ProductReviewVO"/>
+	<typeAlias alias="MainReservationProductVO" type="com.cafe24.goott351.domain.MainReservationProductVO"/>
+	
+	<typeAlias alias="OrderProductVO" type="com.cafe24.goott351.domain.OrderProductVO"/>
+	<typeAlias alias="OrderProductDTO" type="com.cafe24.goott351.domain.OrderProductDTO"/>
+	<typeAlias alias="OrderCSVO" type="com.cafe24.goott351.domain.OrderCSVO"/>
+	<typeAlias alias="OriginalBoardVO" type="com.cafe24.goott351.domain.OriginalBoardVO"/>
+	<typeAlias alias="BoardCategoryVO" type="com.cafe24.goott351.domain.BoardCategoryVO"/>
+	<typeAlias alias="Base64ImgDTO" type="com.cafe24.goott351.domain.Base64ImgDTO"/>
+	<typeAlias alias="ServiceBoardDTO" type="com.cafe24.goott351.domain.ServiceBoardDTO"/>
+	<typeAlias alias="ReplyVO" type="com.cafe24.goott351.domain.ReplyVO"/>
+	<typeAlias alias="OrderShippingDTO" type="com.cafe24.goott351.domain.OrderShippingDTO"/>
+		<typeAlias alias="OriginalImgVO" type="com.cafe24.goott351.domain.OriginalImgVO"/>
+	<typeAlias alias="OriginalBoardReplyVO" type="com.cafe24.goott351.domain.OriginalBoardReplyVO"/>
+  </typeAliases>	
+  </configuration>

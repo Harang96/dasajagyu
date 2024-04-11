@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.deliveryMapper">
+	<!-- 주문자 배송지 정보(전체) 리스트 가져오기 -->
+	<!-- 기본 배송지가 0번째에 오도록 정렬 -->
+  	<select id="selectDeliveryList" resultType="DeliveryVO">
+		SELECT * FROM delivery WHERE uuid = #{uuid} order by basic_addr desc
+	</select>
+  	
+  	
+  	<select id="selectDefaultDelivery" resultType="DeliveryVO">
+		SELECT * FROM delivery WHERE uuid = #{uuid} and basic_addr = 'Y'
+	</select>
+	
+	 <insert id="insertDelivery">
+ 	 insert into delivery(delivery_no, delivery_postcode , delivery_addr, delivery_detail, basic_addr, uuid, delivery_name, phone_number) 
+ 	 values(#{deliveryNo}, #{deliveryPostcode}, #{deliveryAddr}, #{deliveryDetail}, #{basicAddr}, #{uuid}, #{name}, #{phoneNumber});
+  </insert>
+ 		
+	
+</mapper>

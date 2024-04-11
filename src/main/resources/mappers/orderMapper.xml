@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe24.goott351.mappers.orderMapper">
+
+	<insert id="insertOrder">
+		insert into orders (order_no, order_status, pay_status, payment_key,
+						payment_date, order_name, customer_id, pay_method, pay_account_no)
+		values(#{orderId}, #{orderStatus}, #{status}, #{paymentKey}, #{approvedAt}, #{orderName}, #{uuid}, #{method}, #{number})
+	</insert>
+	
+  	<insert id="insertOrderProduct">
+  		insert into order_products (order_no, product_no, quantity, order_price, original_name, sales_cost, discount_cost)
+		values (#{orderId}, #{productNo}, #{qty}, #{orderPrice}, #{originalName}, #{salesCost}, #{discountCost})
+  	</insert>
+  	
+  	<insert id="insertOrderBilling">
+  		insert into order_billing (order_no, product_amount, product_discount, point_discount, shipping_cost, order_cost, order_point)
+		values (#{orderId}, #{productAmount}, #{productDiscount},#{pointDiscount}, #{shippingCost}, #{orderCost}, #{orderPoint})
+  	</insert>
+  	
+  	<insert id="insertShipping">
+  		insert into shipping (order_no, reciever, phone, address, zip_code, request)
+  		values (#{orderId}, #{reciever}, #{phone}, #{address}, #{zipCode}, #{request})
+  	</insert>
+  	
+  	<update id="updateCustomersPoint">
+  		update customers set user_point = user_point + #{point} where uuid = #{uuid}
+  	</update>
+  	
+  	<select id="hasCartProductByUUID" resultType="Integer">
+  		select cart_no from cart where uuid = #{uuid} and product_no = #{productNo}
+  	</select>
+  	
+  	<select id="hasCartProductBySessionId" resultType="Integer">
+  		select cart_no from cart where session_id = #{sessionId} and product_no = #{productNo}
+  	</select>
+  	
+  	<delete id="deleteCartProduct">
+  		delete from cart where cart_no = #{cartNo}
+  	</delete>
+  	
+  	<select id="getProductCurrentQty" resultType="Integer">
+  		select current_qty from products where product_no = #{productNo}
+  	</select>
+  	
+  	<update id="updateCartQty">
+  		update cart set quantity = #{qty} where cart_no = #{cartNo}
+  	</update>
+  	
+  	<select id="selectOrderCustomer" resultType="LoginCustomerVO">
+		select uuid, email, password, name, birthday, phone_number, gender, nickname, session_key, user_img, user_point, register_date, is_admin, msg_agree, bank_name, refund_account, social_login, basic_addr from customers where uuid = #{uuid}
+	</select>
+	
+	<select id="selectCountByOrderStatus" resultType="Integer">
+		select count(*) from orders 
+		<where>
+			<choose>
+				<when test="status != '주문취소'">
+					order_status=#{status}
+				</when>		
+				<when test="status == '주문취소'">
+					order_status='주문취소' or order_status='부분취소'
+				</when>
+			</choose>
+		</where>
+	</select>
+ 
+</mapper>

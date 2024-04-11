@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<select id="searchId" resultType="String">
+	select ifnull(user_id, 0) from userinfo 
+    where user_name = #{user_name} and user_phone = #{user_phone} and user_key = 'Y'
+</select>
